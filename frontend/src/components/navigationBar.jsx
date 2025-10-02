@@ -2,8 +2,8 @@ const NavigationBar = () => {
 
     const navbarElements = [
         {
-            name: "Home",
-            link: "/"
+            name: "Login",
+            link: "/accountLogin"
         },
         {
             name: "ElementTwo",

@@ -36,9 +36,9 @@ const MarketplaceGrid = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 bg-gray-50 px-4 py-16">
-            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 hover:">
+            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {products.map((product) => (
-                    <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col">
+                    <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col">
                         <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover" />
                         <div className="p-6 flex flex-col flex-grow">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">

@@ -1,13 +1,13 @@
 import {useState} from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const AccountCreationForm = () => {
+const LoginForm = () => {
     const [input, setInput] = useState({ email: "", password: "" });
     const [passwordInputError, setPasswordInputError] = useState(false);
     const [passwordInputLengthError, setPasswordInputLengthError] = useState(false);
     const [emailInputError, setEmailInputError] = useState(false);
     const [emailInputValidityError, setEmailInputValidityError] = useState(false);
-    
+
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const emailValidityCheck = (email) => email.includes("@"); // Checking to see whether there is an @ character
@@ -17,6 +17,7 @@ const AccountCreationForm = () => {
         setEmailInputError(false);
         setPasswordInputError(false);
         setPasswordInputLengthError(false);
+        setEmailInputValidityError(false);
 
         let hasError = false;
 
@@ -39,7 +40,7 @@ const AccountCreationForm = () => {
         if (hasError) return;
 
         try {
-            const response = await fetch(`${backendUrl}/api/user-unAuth/createUserAccount`, {
+            const response = await fetch(`${backendUrl}/api/user-unAuth/userLogin`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -114,13 +115,14 @@ const AccountCreationForm = () => {
                         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
                         onClick={handleSubmit}
                     >
-                        Create Account
+                        Sign In
                     </button>
+
                     <Link
-                      to="/accountLogin"
+                      to="/accountCreation"
                       className="text-sm flex items-center justify-center text-gray-700 dark:text-gray-300 hover:underline"
                     >
-                      Already got an account?
+                      Don't have an account?
                     </Link>
                 </form>
             </div>
@@ -128,4 +130,4 @@ const AccountCreationForm = () => {
     );
 };
 
-export default AccountCreationForm;
+export default LoginForm;
