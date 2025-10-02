@@ -48,6 +48,11 @@ const MarketplaceGrid = () => {
                                 {product.description}
                             </p>
                         </div>
+                            <div className="flex justify-center mb-4">
+                                <button className="bg-blue-600 text-white w-full mx-4 py-2 px-4 rounded-md hover:bg-blue-700 transition">
+                                    Add to Cart
+                                </button>
+                            </div>
                     </div>
                 ))}
             </div>

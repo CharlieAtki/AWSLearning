@@ -1,5 +1,6 @@
 const NavigationBar = () => {
 
+    // Navigation bar elements
     const navbarElements = [
         {
             name: "Login",
@@ -15,6 +16,7 @@ const NavigationBar = () => {
         }
     ];
 
+    // Placeholder user profile data
     const userProfile = {
         name: "John Doe",
         imageUrl: "/robot.png"
@@ -48,7 +50,7 @@ const NavigationBar = () => {
             {/* Profile Picture */}
             <div className="pl-16 ml-auto">
                 <img
-                    src={userProfile.imageUrl}
+                    src={userProfile.imageUrl ? userProfile.imageUrl : "/robot.png"}
                     alt="Profile"
                     className="w-10 h-10 rounded-full"
                 />
