@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LandingPage from './pages/landingPage';
+import MarketplacePage from './pages/marketplace';
 
 const App = ( ) => {
 	return (
 		<Router>
 			<Routes>
-				<Route path='/' element={ <LandingPage /> } />
+				<Route path='/' element={ <MarketplacePage /> } />
 			</Routes>
 		</Router>
  	)
