@@ -95,7 +95,7 @@ const LoginForm = () => {
                             value={input.email}
                             onChange={handleChange}
                         />
-                        {emailInputError && <p className="text-red-500 text-sm mt-1">Email already taken</p>}
+                        {emailInputError && <p className="text-red-500 text-sm mt-1">No email found</p>}
                         {emailInputValidityError && <p className="text-red-500 text-sm mt-1">Invalid email</p>}
                     </div>
                     <div className="flex flex-col">

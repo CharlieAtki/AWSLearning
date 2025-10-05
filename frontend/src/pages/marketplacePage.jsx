@@ -3,7 +3,7 @@ import NavigationBar from "../components/navigationBar";
 
 const MarketplacePage = () => {
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <NavigationBar />
             <MarketplaceGrid />
         </div>

@@ -145,3 +145,30 @@ export const fetchCurrentUserInformation = async (req, res) => {
         });
     }
 };
+
+// Update your userLogout function to use the JWT user info
+export const userLogout = async (req, res) => {
+    try {
+        // Get user info from JWT (provided by middleware)
+        const userId = req.user?.id;
+
+        // Optional: Log the logout event with user info
+        console.log(`User ${userId} logged out at ${new Date().toISOString()}`);
+
+        // If you're using token blacklisting (advanced):
+        // const token = req.headers.authorization?.split(' ')[1];
+        // await blacklistToken(token);
+
+        res.status(200).json({
+            success: true,
+            message: 'Logged out successfully'
+        });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Logout failed',
+            error: error.message
+        });
+    }
+};
