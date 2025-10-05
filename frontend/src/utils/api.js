@@ -22,7 +22,8 @@ const makeAuthenticatedRequest = async (url, options = {}) => {
         if (refreshToken) {
             try {
                 // Call refresh endpoint
-                const refreshResponse = await fetch('/api/user-unAuth/refresh', {
+                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+                const refreshResponse = await fetch(`${backendUrl}/api/user-unAuth/refresh`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -40,20 +41,22 @@ const makeAuthenticatedRequest = async (url, options = {}) => {
                     // Retry the original request with new token
                     response = await makeRequest(data.accessToken);
                 } else {
-                    // Refresh failed, redirect to login
+                    // Refresh failed, redirect to accountLogin
                     localStorage.removeItem('accessToken');
                     localStorage.removeItem('refreshToken');
-                    window.location.href = '/login';
+                    window.location.href = '/accountLogin'; // Changed from '/login'
                 }
             } catch (error) {
                 console.error('Token refresh failed:', error);
-                window.location.href = '/login';
+                window.location.href = '/accountLogin'; // Changed from '/login'
             }
         } else {
-            // No refresh token, redirect to login
-            window.location.href = '/login';
+            // No refresh token, redirect to accountLogin
+            window.location.href = '/accountLogin'; // Changed from '/login'
         }
     }
 
     return response;
 };
+
+export default makeAuthenticatedRequest;

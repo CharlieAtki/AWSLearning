@@ -114,7 +114,7 @@ export const userCreation = async (req, res) => {
     }
 };
 
-export const fetchCurrentUserInformation = async (res, req) => {
+export const fetchCurrentUserInformation = async (req, res) => {
     try {
         // The JWT middleware already decoded the token and put user info in req.user
         const userId = req.user.id; // or req.user._id depending on what you stored in the JWT

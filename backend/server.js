@@ -79,3 +79,4 @@ app.listen(PORT, () => {
 app.use('/api/user-unAuth', unAuthRoutes) // Routes for unauthenticated users
 // noinspection JSCheckFunctionSignatures
 app.use('/api/user-auth', authenticateToken, userRoutes) // Routes for authenticated users
+
