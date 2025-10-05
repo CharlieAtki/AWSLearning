@@ -39,7 +39,7 @@ const AccountCreationForm = () => {
         if (hasError) return;
 
         try {
-            const response = await fetch(`${backendUrl}/api/user-unAuth/createUserAccount`, {
+            const response = await fetch(`${backendUrl}/api/user-unAuth/createUser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const AccountCreationForm = () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
-                window.location.href = "/dashboard";
+                window.location.href = "/";
             } else { // Identifying the cause of the Error
                 if (data.field === "email") {
                     setEmailInputError(true);
@@ -74,7 +74,7 @@ const AccountCreationForm = () => {
         <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
-                    Sign in to your account
+                    Create your account
                 </h2>
                 <form className="space-y-4">
                     <div className="flex flex-col">

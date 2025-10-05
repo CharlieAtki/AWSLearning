@@ -57,7 +57,7 @@ const LoginForm = () => {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 
-                window.location.href = "/dashboard";
+                window.location.href = "/";
             } else {
                 if (data.field === "email") {
                     setEmailInputError(true);
