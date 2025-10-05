@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 // Step 1: Set up MongoDB connection
-const mongoUri = process.env.MONGODB_URI || "mongodb+srv://charlie06atkinson:iLwdpmiA4cdZGDSK@erpdatabase.eolfh.mongodb.net/RecapProject?retryWrites=true&w=majority&appName=ERPDatabase";
+const mongoUri = process.env.MONGODB_URI;
 
 mongoose.connect(mongoUri)
 .then(() => {
@@ -74,5 +74,4 @@ app.listen(PORT, () => {
 
 // Routes - Need to update inline with the actual route files
 app.use('/api/user-unAuth', unAuthRoutes) // Routes for unauthenticated users
-app.use('/api/user-auth', userRoutes) // Routes for authenticated users
-app.use('/api/workspace', workplaceRoutes) // Routes for workspace (Table)
+// app.use('/api/user-auth', userRoutes) // Routes for authenticated users

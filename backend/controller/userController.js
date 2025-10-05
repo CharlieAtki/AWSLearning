@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import {generateTokens} from "./authCheck";
-import User from "../models/User";
+import {generateTokens} from "./authCheck.js";
+import User from "../models/User.js";
 import bcrypt from 'bcryptjs';
 
 
