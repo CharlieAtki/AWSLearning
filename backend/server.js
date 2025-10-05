@@ -2,8 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from 'cors';
 import dotenv from 'dotenv';
-import session from "express-session";
-import MongoStore from "connect-mongo";
+import jwt from 'jsonwebtoken';
 import unAuthRoutes from "./routes/unAuthRoutes.js";
 
 // Load environment variables
@@ -32,7 +31,7 @@ app.use(cors({
     origin: [
             'http://localhost:5173', // Local development
     ],
-    credentials: true, // Allow cookies to be sent
+    credentials: true, // Allow cookies to be sent (for refresh token if using cookies)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     exposedHeaders: ['Set-Cookie', 'Content-Type'],
@@ -40,27 +39,29 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-// Session Configuration
-app.use(session({
-    secret: process.env.SECRET_KEY,
-    resave: false, // Prevents unnecessary session updates
-    saveUninitialized: false, // Only save sessions when they are initialized
-    proxy: process.env.NODE_ENV === 'production', // Used in render hosting
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI, // MongoDB connection URL
-        collectionName: 'sessions', // Collection to store session data
-        ttl: 24 * 60 * 60, // Session expiration in seconds (e.g., 1 day)
-    }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        httpOnly: true, // Prevents JavaScript access to cookies
-        sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Allow cross-origin in production
-        maxAge: 24 * 60 * 60 * 1000, // Cookie expiration in milliseconds (e.g., 1 day)
-        path: '/',
-    },
-    name: 'connect.sid', // Session cookie name
-}));
+// JWT Middleware for protected routes
+export const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: 'Access token required'
+        });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(403).json({
+                success: false,
+                message: 'Invalid or expired token'
+            });
+        }
+        req.user = user;
+        next();
+    });
+};
 
 // Step 2: Middleware to handle JSON data
 app.use(express.json());
