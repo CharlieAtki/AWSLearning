@@ -1,3 +1,11 @@
+import express from "express";
+import mongoose from "mongoose";
+import cors from 'cors';
+import dotenv from 'dotenv';
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import unAuthRoutes from "./routes/unAuthRoutes.js";
+
 // Load environment variables
 dotenv.config();
 
