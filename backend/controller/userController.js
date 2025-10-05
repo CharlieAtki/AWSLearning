@@ -113,3 +113,35 @@ export const userCreation = async (req, res) => {
         });
     }
 };
+
+export const fetchCurrentUserInformation = async (res, req) => {
+    try {
+        // The JWT middleware already decoded the token and put user info in req.user
+        const userId = req.user.id; // or req.user._id depending on what you stored in the JWT
+
+        const currentUser = await User.findById(userId).select('-hashedPassword'); // Exclude password from the response
+
+        if (!currentUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            user: {
+                id: currentUser._id,
+                email: currentUser.email,
+                createdAt: currentUser.createdAt
+            }
+        });
+
+    } catch (error) {
+        console.error('Fetch user error:', error)
+        res.status(500).json({
+            success: false,
+            message: 'Server error fetching user information'
+        });
+    }
+};

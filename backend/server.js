@@ -4,6 +4,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import unAuthRoutes from "./routes/unAuthRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import {authCheck} from "./controller/authCheck.js";
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +60,7 @@ export const authenticateToken = (req, res, next) => {
                 message: 'Invalid or expired token'
             });
         }
+        // Returning the user information
         req.user = user;
         next();
     });
@@ -74,4 +77,5 @@ app.listen(PORT, () => {
 
 // Routes - Need to update inline with the actual route files
 app.use('/api/user-unAuth', unAuthRoutes) // Routes for unauthenticated users
-// app.use('/api/user-auth', userRoutes) // Routes for authenticated users
+// noinspection JSCheckFunctionSignatures
+app.use('/api/user-auth', authenticateToken, userRoutes) // Routes for authenticated users
