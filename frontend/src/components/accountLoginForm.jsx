@@ -10,10 +10,10 @@ const LoginForm = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    const emailValidityCheck = (email) => email.includes("@"); // Checking to see whether there is an @ character
+    const emailValidityCheck = (email) => email.includes("@");
 
     const handleSubmit = async () => {
-        event.preventDefault(); // prevent default form submit behavior
+        event.preventDefault();
         setEmailInputError(false);
         setPasswordInputError(false);
         setPasswordInputLengthError(false);
@@ -46,15 +46,19 @@ const LoginForm = () => {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                credentials: 'include',
                 body: JSON.stringify(input)
             });
 
             const data = await response.json();
 
             if (response.ok && data.success) {
+                // Store JWT tokens in localStorage
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
                 window.location.href = "/dashboard";
-            } else { // Identifying the cause of the Error
+            } else {
                 if (data.field === "email") {
                     setEmailInputError(true);
                 } else if (data.field === "password") {
