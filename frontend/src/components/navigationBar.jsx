@@ -110,9 +110,9 @@ const NavigationBar = () => {
 
 
     return (
-        <nav className="w-full bg-gray-900 text-white shadow-lg">
+        <nav className="w-full dark:bg-gray-900 bg-gray-50 dark:text-white shadow-lg">
             {/* Main navbar */}
-            <div className="px-4 sm:px-6 lg:px-8">
+            <div className="py-2 px-2 sm:px-4 lg:px-6">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
                     <div className="flex-shrink-0">
@@ -130,14 +130,14 @@ const NavigationBar = () => {
                             <button
                                 key={index}
                                 onClick={() => handleNavigation(element.link)}
-                                className="text-sm text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                                className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
                             >
                                 {element.name}
                             </button>
                         ))}
                         <button
                             onClick={() => onLogout()}
-                            className="text-sm text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                            className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
                         >
                             Logout
                     </button>
@@ -148,7 +148,7 @@ const NavigationBar = () => {
                         {/* Profile Section */}
                         <div className="flex items-center space-x-2">
                             <div className="hidden sm:block text-right">
-                                <p className="text-xs text-gray-300">
+                                <p className="text-xs dark:text-gray-300">
                                     {loading ? 'Loading...' : (userData?.user?.email || 'Guest')}
                                 </p>
                             </div>
@@ -203,7 +203,7 @@ const NavigationBar = () => {
                     ))}
                     <button
                         onClick={() => onLogout()}
-                        className="text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
+                        className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
                     >
                         Logout
                     </button>
