@@ -135,14 +135,15 @@ const NavigationBar = () => {
                                 {element.name}
                             </button>
                         ))}
-                        <button
-                            onClick={() => onLogout()}
-                            className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
-                        >
-                            Logout
-                    </button>
+                        {userData && (
+                            <button
+                                onClick={() => onLogout()}
+                                className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                            >
+                                Logout
+                            </button>
+                        )}
                     </div>
-
                     {/* Profile and Mobile Menu Button */}
                     <div className="flex items-center space-x-4">
                         {/* Profile Section */}
@@ -201,12 +202,14 @@ const NavigationBar = () => {
                             {element.name}
                         </button>
                     ))}
-                    <button
-                        onClick={() => onLogout()}
-                        className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
-                    >
-                        Logout
-                    </button>
+                    {userData && (
+                        <button
+                            onClick={() => onLogout()}
+                            className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
+                        >
+                            Logout
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>
