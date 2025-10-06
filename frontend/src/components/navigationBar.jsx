@@ -16,17 +16,9 @@ const NavigationBar = () => {
     // Navigation bar elements
     const navbarElements = [
         {
-            name: "Login",
-            link: "/accountLogin"
+            name: "Place Holder",
+            link: "/test"
         },
-        {
-            name: "ElementTwo",
-            link: "/elementTwo"
-        },
-        {
-            name: "ElementThree",
-            link: "/elementThree"
-        }
     ];
 
     // Placeholder user profile data
@@ -135,6 +127,14 @@ const NavigationBar = () => {
                                 {element.name}
                             </button>
                         ))}
+                        {!userData && (
+                            <button
+                                onClick={() => handleNavigation("/accountLogin")}
+                                className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                            >
+                                Login
+                            </button>
+                        )}
                         {userData && (
                             <button
                                 onClick={() => onLogout()}
@@ -149,14 +149,14 @@ const NavigationBar = () => {
                         {/* Profile Section */}
                         <div className="flex items-center space-x-2">
                             <div className="hidden sm:block text-right">
-                                <p className="text-xs dark:text-gray-300">
+                                <p className="text-xs dark:text-gray-300 font-semibold">
                                     {loading ? 'Loading...' : (userData?.user?.email || 'Guest')}
                                 </p>
                             </div>
                             <img
                                 src={userProfile.imageUrl ? userProfile.imageUrl : "/robot.png"}
                                 alt="Profile"
-                                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-gray-600 hover:border-gray-400 transition-colors cursor-pointer"
+                                className="w-8 h-8 sm:w-11 sm:h-11 rounded-full border-2 border-gray-600 hover:border-gray-400 transition-colors cursor-pointer"
                             />
                         </div>
 
@@ -188,7 +188,11 @@ const NavigationBar = () => {
                     {/* Mobile user info */}
                     <div className="sm:hidden px-3 py-2 border-b border-gray-700 mb-2">
                         <p className="text-sm text-gray-300">
-                            {loading ? 'Loading...' : (userData?.user?.email || 'Guest')}
+                            {loading ? 'Loading...' : (
+                                <span className="font-semibold text-white">
+                                    User:
+                                </span>
+                            )} {userData?.user?.email || 'Guest'}
                         </p>
                     </div>
 
@@ -202,6 +206,14 @@ const NavigationBar = () => {
                             {element.name}
                         </button>
                     ))}
+                    {!userData && (
+                        <button
+                            onClick={() => handleNavigation("/accountLogin")}
+                            className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
+                        >
+                            Login
+                        </button>
+                    )}
                     {userData && (
                         <button
                             onClick={() => onLogout()}

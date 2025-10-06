@@ -1,5 +1,6 @@
 import {useState} from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {ArrowLeft} from "lucide-react";
 
 const LoginForm = () => {
     const [input, setInput] = useState({ email: "", password: "" });
@@ -56,7 +57,7 @@ const LoginForm = () => {
                 localStorage.setItem('accessToken', data.accessToken);
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                
+
                 window.location.href = "/";
             } else {
                 if (data.field === "email") {
@@ -75,8 +76,26 @@ const LoginForm = () => {
         setInput((prev) => ({ ...prev, [name]: value }));
     };
 
+    const navigate = useNavigate();
+
+    const goBack = () => {
+        navigate(-1);
+    }
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 p-6">
+            {/* Back Button */}
+            <div className="w-full max-w-md mb-4">
+                <button
+                    onClick={goBack}
+                    className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span>Back</span>
+                </button>
+            </div>
+
+            {/* Login Form */}
             <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
                     Sign in to your account
