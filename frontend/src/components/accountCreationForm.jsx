@@ -52,6 +52,11 @@ const AccountCreationForm = () => {
             const data = await response.json();
 
             if (response.ok && data.success) {
+                // Store JWT tokens in localStorage
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
                 window.location.href = "/";
             } else { // Identifying the cause of the Error
                 if (data.field === "email") {
