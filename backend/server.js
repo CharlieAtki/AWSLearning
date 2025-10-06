@@ -32,6 +32,7 @@ app.set('trust proxy', 1);
 app.use(cors({
     origin: [
             'http://localhost:5173', // Local development
+            'https://cafe-application-kohl.vercel.app', // production development
     ],
     credentials: true, // Allow cookies to be sent (for refresh token if using cookies)
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -70,7 +71,7 @@ export const authenticateToken = (req, res, next) => {
 app.use(express.json());
 
 // Step 4: Start the Express server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Backend server running on http://localhost:${PORT}`);
 });
