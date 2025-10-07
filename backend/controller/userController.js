@@ -133,6 +133,8 @@ export const fetchCurrentUserInformation = async (req, res) => {
             user: {
                 id: currentUser._id,
                 email: currentUser.email,
+                business: currentUser.business,
+                orders: currentUser.orders,
                 createdAt: currentUser.createdAt
             }
         });

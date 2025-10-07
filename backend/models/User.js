@@ -10,6 +10,22 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    business: {
+        businessId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Business',
+            required: true,
+        },
+        businessName: {
+            type: String,
+            required: true,
+        },
+        userRole: {
+            type: String,
+            enum: ['owner', 'employee'],
+            required: true,
+        }
+    },
     orders: [
         {
             orderId: {
