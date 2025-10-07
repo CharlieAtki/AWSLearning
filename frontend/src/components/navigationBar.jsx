@@ -127,6 +127,25 @@ const NavigationBar = () => {
                                 {element.name}
                             </button>
                         ))}
+                        {/* Business Creation Link */}
+                        {userData ? (
+                            userData.user.role === 'business' ? (
+                                <button
+                                    onClick={() => handleNavigation("/businessDashboard")}
+                                    className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                                >
+                                    Business
+                                </button>
+                            ) : (
+                                // Create the business account with the User
+                                <button
+                                    onClick={() => handleNavigation("/businessDashboard")}
+                                    className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                                >
+                                    Business
+                                </button>
+                            )
+                        ) : null}
                         {!userData && (
                             <button
                                 onClick={() => handleNavigation("/accountLogin")}
