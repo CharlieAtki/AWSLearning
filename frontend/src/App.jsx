@@ -3,7 +3,7 @@ import MarketplacePage from './pages/marketplacePage';
 import AccountCreationForm from './pages/accountCreationPage';
 import LoginForm from './components/accountLoginForm';
 import CheckoutPage from './pages/checkoutPage';
-import BusinessDashboard from './pages/businessDashboard';
+import BusinessDashboardPage from './pages/businessDashboardPage';
 import BusinessCreationPage from './pages/businessCreationPage';
 
 const App = ( ) => {
@@ -14,7 +14,7 @@ const App = ( ) => {
 				<Route path='/accountCreation' element={ <AccountCreationForm /> } />
 				<Route path='/accountLogin' element={ <LoginForm /> } />
 				<Route path='checkout' element={ <CheckoutPage /> } />
-				<Route path='/businessDashboard' element={ <BusinessDashboard /> } />
+				<Route path='/businessDashboard' element={ <BusinessDashboardPage /> } />
 				<Route path='/businessCreation' element={ <BusinessCreationPage /> } />
 			</Routes>
 		</Router>
