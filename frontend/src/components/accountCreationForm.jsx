@@ -49,7 +49,8 @@ const AccountCreationForm = () => {
                 credentials: 'include',
                 body: JSON.stringify(input)
             });
-
+            
+            // Fetched data from the response (User Info)
             const data = await response.json();
 
             if (response.ok && data.success) {

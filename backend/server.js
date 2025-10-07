@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import unAuthRoutes from "./routes/unAuthRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 import {authCheck} from "./controller/authCheck.js";
 
 // Load environment variables
@@ -80,4 +81,6 @@ app.listen(PORT, () => {
 app.use('/api/user-unAuth', unAuthRoutes) // Routes for unauthenticated users
 // noinspection JSCheckFunctionSignatures
 app.use('/api/user-auth', authenticateToken, userRoutes) // Routes for authenticated users
+
+app.use('/api/product-unAuth', productRoutes) // Routes for unauthenticated users
 
