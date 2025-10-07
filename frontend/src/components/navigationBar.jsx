@@ -16,8 +16,8 @@ const NavigationBar = () => {
     // Navigation bar elements
     const navbarElements = [
         {
-            name: "Place Holder",
-            link: "/test"
+            name: "Marketplace",
+            link: "/"
         },
     ];
 
@@ -91,9 +91,9 @@ const NavigationBar = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleNavigation = (link) => {
-        navigate(link);
-        setIsMenuOpen(false); // Close menu after navigation
+    const handleNavigation = (path, data) => {
+        navigate(path, { state: data });
+        setIsMenuOpen(false); // Close menu after navigation    
     };
 
     const onLogout = () => {
@@ -129,7 +129,8 @@ const NavigationBar = () => {
                         ))}
                         {/* Business Creation Link */}
                         {userData ? (
-                            userData.user.role === 'business' ? (
+                            userData.user.business.userRole === 'owner' ? (
+                                // Go to the business dashboard
                                 <button
                                     onClick={() => handleNavigation("/businessDashboard")}
                                     className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
@@ -139,10 +140,10 @@ const NavigationBar = () => {
                             ) : (
                                 // Create the business account with the User
                                 <button
-                                    onClick={() => handleNavigation("/businessDashboard")}
+                                    onClick={() => handleNavigation("/businessCreation")}
                                     className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
                                 >
-                                    Business
+                                    Create Business
                                 </button>
                             )
                         ) : null}

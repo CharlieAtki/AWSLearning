@@ -18,7 +18,6 @@ const businessSchema = new mongoose.Schema({
     ],
     location: {
         type: String,
-        required: true,
     },
     products: [
         {

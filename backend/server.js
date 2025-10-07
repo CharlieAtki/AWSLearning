@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import unAuthRoutes from "./routes/unAuthRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import businessRoutes from "./routes/businessRoutes.js";
 import {authCheck} from "./controller/authCheck.js";
 
 // Load environment variables
@@ -84,3 +85,4 @@ app.use('/api/user-auth', authenticateToken, userRoutes) // Routes for authentic
 
 app.use('/api/product-unAuth', productRoutes) // Routes for unauthenticated users
 
+app.use('/api/business-unAuth', businessRoutes) // Routes for unauthenticated users

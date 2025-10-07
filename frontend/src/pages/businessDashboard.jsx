@@ -4,7 +4,6 @@ const BusinessDashboard = () => {
     return (
         <div>
             <NavigationBar />
-            <h1>Business Dashboard</h1>
         </div>
     );
 };
