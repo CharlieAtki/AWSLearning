@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import makeAuthenticatedRequest from '../utils/api.js';
 import {handleLogout} from "../utils/logout.js";
+import { use } from "react";
 
 const NavigationBar = () => {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ const NavigationBar = () => {
     const [loading, setLoading] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [tokenCheck, setTokenCheck] = useState(Date.now()); // Add this state
+    const [currentLocation, setCurrentLocation] = useState(location.pathname); // Track current location
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -91,8 +93,8 @@ const NavigationBar = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleNavigation = (path, data) => {
-        navigate(path, { state: data });
+    const handleNavigation = (path) => {
+        navigate(path);
         setIsMenuOpen(false); // Close menu after navigation    
     };
 
@@ -100,6 +102,11 @@ const NavigationBar = () => {
         handleLogout(backendUrl, navigate, setUserData);
     };
 
+    // Updates when the location changes
+    useEffect(() => {
+        const currentLocation = location.pathname; // The current location of the user
+        setCurrentLocation(currentLocation);
+    }, [location.pathname]);
 
     return (
         <nav className="w-full dark:bg-gray-900 bg-gray-50 dark:text-white shadow-lg">
@@ -130,13 +137,15 @@ const NavigationBar = () => {
                         {/* Business Creation Link */}
                         {userData ? (
                             userData.user.business.userRole === 'owner' ? (
-                                // Go to the business dashboard
-                                <button
-                                    onClick={() => handleNavigation("/businessDashboard")}
-                                    className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
-                                >
-                                    Business
-                                </button>
+                                currentLocation !== '/businessDashboard' ? (
+                                    // Go to the business dashboard
+                                    <button
+                                        onClick={() => handleNavigation("/businessDashboard")}
+                                        className="text-sm dark:text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md transition-colors duration-200"
+                                    >
+                                        Business
+                                    </button>
+                                ) : null
                             ) : (
                                 // Create the business account with the User
                                 <button
@@ -226,6 +235,27 @@ const NavigationBar = () => {
                             {element.name}
                         </button>
                     ))}
+                    {userData ? (
+                        userData.user.business.userRole === 'owner' ? (
+                            currentLocation !== '/businessDashboard' ? (
+                                // Go to the business dashboard
+                                <button
+                                    onClick={() => handleNavigation("/businessDashboard")}
+                                    className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
+                                >
+                                    Business
+                                </button>
+                            ) : null
+                        ) : (
+                            // Create the business account with the User
+                            <button
+                                onClick={() => handleNavigation("/businessCreation")}
+                                className="dark:text-gray-300 hover:text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left transition-colors duration-200"
+                            >
+                                Create Business
+                            </button>
+                        )
+                    ) : null}
                     {!userData && (
                         <button
                             onClick={() => handleNavigation("/accountLogin")}
