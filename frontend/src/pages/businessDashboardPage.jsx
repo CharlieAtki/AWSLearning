@@ -6,9 +6,8 @@ import { useState, useEffect } from "react";
 
 const BusinessDashboardPage = () => {
     const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true); // No loader currently set
+    const [loading, setLoading] = useState(true);
     const [tokenCheck, setTokenCheck] = useState(Date.now());
-
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -30,10 +29,10 @@ const BusinessDashboardPage = () => {
 
                 if (response.ok) {
                     const data = await response.json();
+                    
                     setUserData(data);
-                    console.log("User data fetched:", data);
                 } else {
-                    console.error("Failed to fetch user data");
+                    console.error("Failed to fetch user data - Status:", response.status);
                     setUserData(null);
                     localStorage.removeItem("accessToken");
                     localStorage.removeItem("refreshToken");
@@ -74,7 +73,7 @@ const BusinessDashboardPage = () => {
             <div className="flex flex-1">
                 <BusinessDashboardSideBar />
                 <main className="flex-1 p-4 overflow-y-auto">
-                    <Outlet context={{ userData }} /> {/* Passing the current user info to the submenus */}
+                    <Outlet context={{ userData }} />
                 </main>
             </div>
         </div>

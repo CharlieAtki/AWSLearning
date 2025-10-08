@@ -87,9 +87,37 @@ const BusinessProductCreation = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        // Try multiple possible locations for businessId
+        let businessId = null;
+        
+        // Check various possible data structures
+        if (userData?.business?.businessId) {
+            businessId = userData.business.businessId;
+            console.log("Found businessId at userData.business.businessId:", businessId);
+        } else if (userData?.businessId) {
+            businessId = userData.businessId;
+            console.log("Found businessId at userData.businessId:", businessId);
+        } else if (userData?.user?.business?.businessId) {
+            businessId = userData.user.business.businessId;
+            console.log("Found businessId at userData.user.business.businessId:", businessId);
+        } else if (userData?._id) {
+            // If user has an _id but no business, they might not be associated with a business
+            console.error("User found but no business association");
+            alert("Your account is not associated with a business. Please contact support.");
+            return;
+        }
+
+        if (!businessId) {
+            console.error("Business ID not found in user data");
+            console.error("Full userData structure:", JSON.stringify(userData, null, 2));
+            alert("Unable to create product: Business information not available");
+            return;
+        }
+
         // Submit the form data to your backend API
         console.log("Submitting product:", input);
-        console.log("current user busienss iD", userData.businessId)
+        console.log("Using business ID:", businessId);
+        
         try {
             const response = await fetch(`${backendUrl}/api/product-unAuth/createProduct`, {
                 method: "POST",
@@ -103,13 +131,26 @@ const BusinessProductCreation = () => {
                     price: input.price,
                     category: input.category,
                     imageUrl: input.imageUrl,
-                    businessId: userData.businessId // Current user businessId
+                    businessId: businessId
                 })
             });
             const data = await response.json();
             console.log("Product created:", data);
+            
+            if (data.success) {
+                // Reset form after successful creation
+                setInput({
+                    productName: "",
+                    description: "",
+                    price: "",
+                    category: "",
+                    imageUrl: ""
+                });
+                alert("Product created successfully!");
+            }
         } catch (err) {
             console.error("Product creation failed", err);
+            alert("Failed to create product. Please try again.");
         }
     };
 
