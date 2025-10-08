@@ -111,7 +111,7 @@ const NavigationBar = () => {
     return (
         <nav className="w-full dark:bg-gray-900 bg-gray-50 dark:text-white shadow-lg">
             {/* Main navbar */}
-            <div className="py-2 px-2 sm:px-4 lg:px-6">
+            <div className="py-2 px-2 sm:px-4 lg:px-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
                     <div className="flex-shrink-0">

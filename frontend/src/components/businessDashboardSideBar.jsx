@@ -1,9 +1,19 @@
 import { useState } from "react";
-import {FiPlus, FiUserPlus, FiChevronLeft, FiChevronRight, FiPlusCircle} from "react-icons/fi";
+import {FiPlus, FiUserPlus, FiChevronLeft, FiChevronRight, FiPlusCircle, FiMenu} from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BusinessDashboardSideBar = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const isActive = (path) => location.pathname === path;
+
+    const handleNavigate = (path) => {
+        navigate(path);
+    }
 
     return (
         <AnimatePresence>
@@ -21,11 +31,27 @@ const BusinessDashboardSideBar = () => {
             >
                 {/* Top section */}
                 <div className="flex flex-col p-4 space-y-4">
-                    <button className={`
+                    <button 
+                    className={`
                         flex items-center px-3 py-2 text-sm font-medium rounded-md
+                        ${isActive('/businessDashboard/createProduct') ? 'bg-gray-200 dark:bg-gray-700' : ''}
                         text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
                         ${isCollapsed ? "justify-center" : "justify-start"}
-                    `}>
+                    `}
+                    onClick={() => handleNavigate('/businessDashboard/createProduct')}
+                    >
+                        <FiMenu className="text-xl" />
+                        {!isCollapsed && <span className="ml-2">Create Product</span>}
+                    </button>
+                    <button 
+                    className={`
+                        flex items-center px-3 py-2 text-sm font-medium rounded-md
+                        ${isActive('/dashboard/createProduct') ? 'bg-gray-200 dark:bg-gray-700' : ''}
+                        text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
+                        ${isCollapsed ? "justify-center" : "justify-start"}
+                    `}
+                    onClick={() => handleNavigate('/placeholder')}
+                    >
                         <FiPlus className="text-xl" />
                         {!isCollapsed && <span className="ml-2">Place Holder</span>}
                     </button>
