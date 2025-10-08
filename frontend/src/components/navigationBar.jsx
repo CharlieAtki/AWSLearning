@@ -137,7 +137,7 @@ const NavigationBar = () => {
                         {/* Business Creation Link */}
                         {userData ? (
                             userData.user.business.userRole === 'owner' ? (
-                                currentLocation !== '/businessDashboard' ? (
+                                currentLocation !== '/businessDashboard' && currentLocation !== '/businessDashboard/createProduct' ? (
                                     // Go to the business dashboard
                                     <button
                                         onClick={() => handleNavigation("/businessDashboard")}
