@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useOutletContext } from 'react-router-dom';
 
 const BusinessProductCreation = () => {
+    // Fetching the current user information from the parent menu
+    const { userData } = useOutletContext();
+
     // useState to manage form inputs
     const [input, setInput] = useState({
         productName: "",
@@ -85,6 +89,7 @@ const BusinessProductCreation = () => {
 
         // Submit the form data to your backend API
         console.log("Submitting product:", input);
+        console.log("current user busienss iD", userData.businessId)
         try {
             const response = await fetch(`${backendUrl}/api/product-unAuth/createProduct`, {
                 method: "POST",
@@ -98,6 +103,7 @@ const BusinessProductCreation = () => {
                     price: input.price,
                     category: input.category,
                     imageUrl: input.imageUrl,
+                    businessId: userData.businessId // Current user businessId
                 })
             });
             const data = await response.json();

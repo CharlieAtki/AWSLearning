@@ -3,7 +3,7 @@ import Product from '../models/Product.js';
 
 export const productCreation = async (req, res) => {
     try {
-        const { productName, description, price, category, imageUrl } = req.body;
+        const { productName, description, price, category, imageUrl, businessId } = req.body;
 
         if ( !productName || !description || !price || !category || !imageUrl ) {
             return res.status(404).json({
@@ -17,7 +17,10 @@ export const productCreation = async (req, res) => {
             description: description,
             price: price,
             category: category,
-            imageUrl: imageUrl
+            imageUrl: imageUrl,
+            business: {
+                businessId: businessId
+            }
         });
 
         await product.save();
