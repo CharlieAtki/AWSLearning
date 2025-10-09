@@ -137,6 +137,7 @@ export const fetchCurrentUserInformation = async (req, res) => {
                 orders: currentUser.orders,
                 userRole: currentUser.business.userRole,
                 businessId: currentUser.business.businessId,
+                checkoutBasket: currentUser.checkoutBasket,
                 createdAt: currentUser.createdAt
             }
         });

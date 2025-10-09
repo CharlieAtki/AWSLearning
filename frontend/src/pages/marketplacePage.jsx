@@ -70,8 +70,8 @@ const MarketplacePage = () => {
         return () => clearInterval(interval);
     }, [userData]);
 
-    const handleCheckout = () => {
-        navigate("/checkout");
+    const handleCheckout = (userData) => {
+        navigate("/checkout", { state: userData });
     };
 
     // ✅ Full-screen loader while backend or token check is in progress
@@ -95,7 +95,7 @@ const MarketplacePage = () => {
 
             {/* Floating Cart Button */}
             <button
-                onClick={handleCheckout}
+                onClick={() => handleCheckout(userData)}
                 className="fixed bottom-6 right-6 bg-gray-600 text-white p-4 rounded-full shadow-lg hover:bg-green-500 hover:scale-110 transition-all duration-300"
             >
                 <ShoppingCart className="w-6 h-6" />
