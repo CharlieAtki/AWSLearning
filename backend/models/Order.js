@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     orderedProducts: [
         {
             productId: {
@@ -20,10 +25,11 @@ const orderSchema = new mongoose.Schema({
     totalValue: {
         type: Number
     },
-    orderDate: {
-        type: Date,
-        required: true,
-    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        default: 'Pending'
+    }
 }, 
     {
         timestamps: true,

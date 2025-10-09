@@ -91,7 +91,7 @@ const MarketplacePage = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <NavigationBar />
-            <MarketplaceGrid />
+            <MarketplaceGrid userData={userData}/> {/* Passing the userData to the grid to reduce the number of API requests */}
 
             {/* Floating Cart Button */}
             <button

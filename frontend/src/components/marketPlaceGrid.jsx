@@ -1,44 +1,11 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState} from "react";
+import makeAuthenticatedRequest from "../utils/api";
 
-const MarketplaceGrid = () => {
+const MarketplaceGrid = ({ userData  }) => {
 
     const [products, setProducts] = useState([]);
     
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-    // const products = [
-    //     {
-    //         id: 1,
-    //         name: "Latte",
-    //         description: "Freshly brewed espresso with steamed milk.",
-    //         imageUrl: "/latte.png"
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Croissant",
-    //         description: "Buttery and flaky pastry.",
-    //         imageUrl: "/croissant.png"
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Espresso",
-    //         description: "Strong and bold coffee shot.",
-    //         imageUrl: "/espresso.png"
-    //     },
-    //     {
-    //         id: 4,
-    //         name: "Macaron",
-    //         description: "Delicate French pastry with a creamy filling.",
-    //         imageUrl: "/macaron.png"
-    //     },
-    //     {
-    //         id: 5,
-    //         name: "Tart",
-    //         description: "A sweet or savory dish with a pastry base.",
-    //         imageUrl: "/tart.png"
-    //     }
-    // ]
 
     useEffect(() => {
         // Fetch products from backend API
@@ -60,6 +27,46 @@ const MarketplaceGrid = () => {
         fetchProducts();
     }, []);
 
+    const addItemToOrder = async (productId) => {
+        try {
+
+            const response = await makeAuthenticatedRequest(`${backendUrl}/api/user-auth/addItemToCheckout`,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        productId,
+                        userEmail: userData.email
+                    })
+                }
+            );
+
+            // const response = await fetch(`${backendUrl}/api/user-auth/addItemToOrder`, {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Accept": "application/json"
+            //     },
+            //     body: JSON.stringify({
+            //         productId, // pass the product ID to the backend
+            //         userId: userData.id
+            //     })
+            // });
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log("Order updated with product:", productId);
+            } else {
+                console.error("Failed to add product to order:", data.message);
+            }
+
+        } catch (error) {
+            console.error('Error adding product to order:', error);
+        }
+    };
+
+
+
     return (
         <div className="flex-1 w-full dark:bg-gray-900 bg-gray-50 px-2 sm:px-8 py-8">
             <div className="w-full max-w-none">
@@ -76,7 +83,9 @@ const MarketplaceGrid = () => {
                                 </p>
                             </div>
                             <div className="flex justify-center mb-4">
-                                <button className="bg-blue-600 text-white w-full mx-4 py-2 px-4 rounded-md hover:bg-blue-700 transition text-sm sm:text-base">
+                                <button className="bg-blue-600 text-white w-full mx-4 py-2 px-4 rounded-md hover:bg-blue-700 transition text-sm sm:text-base"
+                                    onClick={() => addItemToOrder(product._id ?? product.id)}
+                                >
                                     Add to Cart
                                 </button>
                             </div>

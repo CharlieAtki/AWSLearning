@@ -176,3 +176,43 @@ export const userLogout = async (req, res) => {
         });
     }
 };
+
+export const addItemToCheckout = async (req, res) => {
+    try {
+        const { productId, userEmail } = req.body;
+
+        // Write the API to update the user checkout 
+        const user = await User.findOne(userEmail) // Returing the user (found via Id)
+
+        // Checking the user exists in the database
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Cannot find use by Id in the database"
+            });
+        }
+
+        if (!Array.isArray(user.checkoutBasket)) {
+            user.checkoutBasket = [];
+        }
+
+        // Added the item to the checkout
+        user.checkoutBasket.push({ productId })
+
+        // Saving the updated user
+        await user.save();
+
+        // Returning the sucess message
+        res.status(201).json({
+            success: true,
+            message: "Updated the checkout basket with the new item"
+        });
+
+    } catch (error) {
+        console.error('Failed to add item to checkout');
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
