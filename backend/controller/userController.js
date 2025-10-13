@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import {generateTokens} from "./authCheck.js";
 import User from "../models/User.js";
+import Product from "../models/Product.js";
 import bcrypt from 'bcryptjs';
 
 
@@ -321,3 +322,60 @@ export const removeFromCheckout = async (req, res) => {
         });
     }
 };
+
+export const calculateTotalCheckoutValue = async (req, res) => {
+    try {
+        const { userCheckoutBasket, userEmail } = req.body;
+
+        const user = await User.findOne({ email: userEmail });
+
+        // Check if user exists
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Cannot find user by email in the database"
+            });
+        }
+
+        // Use the basket from the request body, or fall back to the user's saved basket
+        const basket = userCheckoutBasket || user.checkoutBasket;
+
+        if (!Array.isArray(basket) || basket.length === 0) {
+            return res.status(200).json({
+                success: true,
+                total: 0,
+                message: "Basket is empty"
+            });
+        }
+
+        // Get all product IDs
+        const productIds = basket.map(item => item.productId);
+
+        // Query all matching products from the DB
+        const products = await Product.find({ _id: { $in: productIds } });
+
+        // Calculate total
+        let total = 0;
+        for (const item of basket) {
+            const product = products.find(p => p._id.toString() === item.productId);
+            const price = product?.price || 0;
+            const quantity = item?.quantity || 0;
+
+            total += price * quantity;
+        }
+
+        // Return total value
+        res.status(200).json({
+            success: true,
+            total: total
+        });
+
+    } catch (error) {
+        console.error("Failed to calculate total checkout value:", error);
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
