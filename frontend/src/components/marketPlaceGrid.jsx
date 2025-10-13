@@ -27,7 +27,7 @@ const MarketplaceGrid = ({ userData  }) => {
         fetchProducts();
     }, []);
 
-    const addItemToOrder = async (productId) => {
+    const addItemToOrder = async (productId, productName) => {
         try {
 
             const response = await makeAuthenticatedRequest(`${backendUrl}/api/user-auth/addItemToCheckout`,
@@ -35,6 +35,7 @@ const MarketplaceGrid = ({ userData  }) => {
                     method: "POST",
                     body: JSON.stringify({
                         productId,
+                        productName,
                         userEmail: userData.email
                     })
                 }
@@ -84,7 +85,7 @@ const MarketplaceGrid = ({ userData  }) => {
                             </div>
                             <div className="flex justify-center mb-4">
                                 <button className="bg-blue-600 text-white w-full mx-4 py-2 px-4 rounded-md hover:bg-blue-700 transition text-sm sm:text-base"
-                                    onClick={() => addItemToOrder(product._id ?? product.id)}
+                                    onClick={() => addItemToOrder(product._id ?? product.id, product.productName)}
                                 >
                                     Add to Cart
                                 </button>

@@ -180,7 +180,7 @@ export const userLogout = async (req, res) => {
 
 export const addItemToCheckout = async (req, res) => {
     try {
-        const { productId, userEmail } = req.body;
+        const { productId, productName, userEmail } = req.body;
 
         // Write the API to update the user checkout 
         const user = await User.findOne(userEmail) // Returing the user (found via Id)
@@ -198,7 +198,7 @@ export const addItemToCheckout = async (req, res) => {
         }
 
         // Added the item to the checkout
-        user.checkoutBasket.push({ productId })
+        user.checkoutBasket.push({ productId, productName })
 
         // Saving the updated user
         await user.save();

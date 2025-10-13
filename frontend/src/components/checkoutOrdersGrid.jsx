@@ -48,7 +48,7 @@ const CheckoutOrdersGrid = () => {
                             key={index}
                             className="border-b border-gray-300 dark:border-gray-700 py-4 flex justify-between"
                         >
-                            <span>{item.productId}</span>
+                            <span>{item.productName}</span>
                             <span>${item.quantity.toFixed(2)}</span>
                         </li>
                     ))}
