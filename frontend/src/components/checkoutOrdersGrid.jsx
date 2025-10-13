@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, X, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import makeAuthenticatedRequest from "../utils/api";
+import { useEffect } from "react";
 
 const CheckoutOrdersGrid = () => {
     const location = useLocation();
@@ -10,6 +11,43 @@ const CheckoutOrdersGrid = () => {
 
     const [userData, setUserData] = useState(location.state);
     const [updatingItem, setUpdatingItem] = useState(null);
+    const [updatingCheckoutValue, setUpdatingCheckoutValue] = useState(null); // Used for spinners
+    const [totalCheckoutValue, setTotalCheckoutValue] = useState(null);
+
+    // Call the route on component mount
+    useEffect(() => {
+        const fetchTheCheckoutTotalCost = async () => {
+            setUpdatingCheckoutValue(true); // Show loading animation
+
+            try {
+                const response = await makeAuthenticatedRequest(
+                    `${backendUrl}/api/user-auth/calculateTotalCheckoutValue`,
+                    {
+                        method: "POST",
+                        body: JSON.stringify({
+                            userCheckoutBasket: userData.user.checkoutBasket,
+                            userEmail: userData.user.email
+                        })
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+                    setTotalCheckoutValue(data.total); // ✅ Fix: use setTotalCheckoutValue
+                } else {
+                    alert("Failed to calculate total checkout value");
+                }
+            } catch (error) {
+                console.error("Error calculating the total cost of the checkout:", error);
+            } finally {
+                setUpdatingCheckoutValue(false); // Done loading
+            }
+        };
+
+        fetchTheCheckoutTotalCost();
+    }, [userData.user.checkoutBasket]);  // Optional: rerun when basket changes
+
 
     const goBack = () => {
         navigate(-1);
@@ -183,6 +221,29 @@ const CheckoutOrdersGrid = () => {
                                 </li>
                             ))}
                         </ul>
+
+                        {/* Total cost section */}
+                        <div className="pt-6 mt-6 border-t border-gray-300 dark:border-gray-700">
+                            <div className="flex justify-between items-center text-lg font-semibold text-gray-800 dark:text-white">
+                                <span>Total:</span>
+                                {updatingCheckoutValue ? (
+                                    <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                ) : (
+                                    <span className="text-green-600 dark:text-green-400">
+                                        ${totalCheckoutValue?.toFixed(2) ?? "0.00"}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Checkout button */}
+                        <button className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md transition">
+                            Proceed to Checkout
+                        </button>
+
                     </>
                 )}
             </div>
