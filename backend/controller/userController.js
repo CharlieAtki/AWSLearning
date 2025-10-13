@@ -182,35 +182,51 @@ export const addItemToCheckout = async (req, res) => {
     try {
         const { productId, productName, userEmail } = req.body;
 
-        // Write the API to update the user checkout 
-        const user = await User.findOne(userEmail) // Returing the user (found via Id)
+        // Find the user by email (fixed query)
+        const user = await User.findOne({ email: userEmail });
 
-        // Checking the user exists in the database
+        // Check if user exists in the database
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: "Cannot find use by Id in the database"
+                message: "Cannot find user by email in the database"
             });
         }
 
+        // Ensure checkoutBasket is an array
         if (!Array.isArray(user.checkoutBasket)) {
             user.checkoutBasket = [];
         }
 
-        // Added the item to the checkout
-        user.checkoutBasket.push({ productId, productName })
+        // Check if item already exists in basket
+        const existingItemIndex = user.checkoutBasket.findIndex(
+            item => item.productId.toString() === productId
+        );
 
-        // Saving the updated user
+        if (existingItemIndex !== -1) {
+            // If item exists, increment quantity
+            user.checkoutBasket[existingItemIndex].quantity += 1;
+        } else {
+            // If item doesn't exist, add new item
+            user.checkoutBasket.push({ 
+                productId, 
+                productName,
+                quantity: 1 
+            });
+        }
+
+        // Save the updated user
         await user.save();
 
-        // Returning the sucess message
-        res.status(201).json({
+        // Return success message with updated basket
+        res.status(200).json({
             success: true,
-            message: "Updated the checkout basket with the new item"
+            message: "Updated the checkout basket with the new item",
+            checkoutBasket: user.checkoutBasket
         });
 
     } catch (error) {
-        console.error('Failed to add item to checkout');
+        console.error('Failed to add item to checkout:', error);
         res.status(400).json({
             success: false,
             message: error.message

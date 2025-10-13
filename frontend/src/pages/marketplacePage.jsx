@@ -14,44 +14,50 @@ const MarketplacePage = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
+    const fetchUserData = async (showLoader = true) => {
+        try {
+            if (showLoader) {
                 setLoading(true);
-                const accessToken = localStorage.getItem("accessToken");
+            }
+            const accessToken = localStorage.getItem("accessToken");
 
-                if (!accessToken) {
-                    setUserData(null);
+            if (!accessToken) {
+                setUserData(null);
+                if (showLoader) {
                     setLoading(false);
-                    return;
                 }
+                return;
+            }
 
-                const response = await makeAuthenticatedRequest(
-                    `${backendUrl}/api/user-auth/fetchCurrentUserInformation`
-                );
+            const response = await makeAuthenticatedRequest(
+                `${backendUrl}/api/user-auth/fetchCurrentUserInformation`
+            );
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserData(data);
-                    console.log("User data fetched:", data);
-                } else {
-                    console.error("Failed to fetch user data");
-                    setUserData(null);
-                    localStorage.removeItem("accessToken");
-                    localStorage.removeItem("refreshToken");
-                    localStorage.removeItem("user");
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
+            if (response.ok) {
+                const data = await response.json();
+                setUserData(data);
+                console.log("User data fetched:", data);
+            } else {
+                console.error("Failed to fetch user data");
                 setUserData(null);
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
                 localStorage.removeItem("user");
-            } finally {
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            setUserData(null);
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            localStorage.removeItem("user");
+        } finally {
+            if (showLoader) {
                 setLoading(false);
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchUserData();
     }, [backendUrl, location.pathname, tokenCheck]);
 
@@ -70,11 +76,23 @@ const MarketplacePage = () => {
         return () => clearInterval(interval);
     }, [userData]);
 
+    // Callback function to refresh user data after checkout update
+    const handleCheckoutUpdate = async () => {
+        await fetchUserData(false); // false = don't show loading spinner
+    };
+
     const handleCheckout = (userData) => {
+        if (!userData || !userData.user) {
+            alert("Please sign in to view your cart");
+            return;
+        }
         navigate("/checkout", { state: userData });
     };
 
-    // ✅ Full-screen loader while backend or token check is in progress
+    // Cart item count
+    const cartItemCount = userData?.user?.checkoutBasket?.length || 0;
+
+    // Full-screen loader while backend or token check is in progress
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-800">
@@ -91,14 +109,27 @@ const MarketplacePage = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <NavigationBar />
-            <MarketplaceGrid userData={userData}/> {/* Passing the userData to the grid to reduce the number of API requests */}
+            <MarketplaceGrid 
+                userData={userData} 
+                onCheckoutUpdate={handleCheckoutUpdate}
+            />
 
-            {/* Floating Cart Button */}
+            {/* Floating Cart Button with Badge */}
             <button
                 onClick={() => handleCheckout(userData)}
-                className="fixed bottom-6 right-6 bg-gray-600 text-white p-4 rounded-full shadow-lg hover:bg-green-500 hover:scale-110 transition-all duration-300"
+                className={`fixed bottom-6 right-6 p-4 rounded-full shadow-lg transition-all duration-300 ${
+                    userData && userData.user 
+                        ? 'bg-gray-600 hover:bg-green-500 hover:scale-110' 
+                        : 'bg-gray-400 cursor-not-allowed'
+                }`}
+                disabled={!userData || !userData.user}
             >
-                <ShoppingCart className="w-6 h-6" />
+                <ShoppingCart className="w-6 h-6 text-white" />
+                {cartItemCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                        {cartItemCount}
+                    </span>
+                )}
             </button>
         </div>
     );
