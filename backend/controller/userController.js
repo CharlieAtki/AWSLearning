@@ -233,3 +233,91 @@ export const addItemToCheckout = async (req, res) => {
         });
     }
 };
+
+// Add these two new functions to your userController.js
+
+export const updateCheckoutQuantity = async (req, res) => {
+    try {
+        const { productId, quantity, userEmail } = req.body;
+
+        // Find the user by email
+        const user = await User.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Cannot find user by email in the database"
+            });
+        }
+
+        // Find the item in the checkout basket
+        const itemIndex = user.checkoutBasket.findIndex(
+            item => item.productId.toString() === productId
+        );
+
+        if (itemIndex === -1) {
+            return res.status(404).json({
+                success: false,
+                message: "Item not found in checkout basket"
+            });
+        }
+
+        // Update the quantity
+        user.checkoutBasket[itemIndex].quantity = quantity;
+
+        // Save the updated user
+        await user.save();
+
+        // Return success message with updated basket
+        res.status(200).json({
+            success: true,
+            message: "Updated item quantity",
+            checkoutBasket: user.checkoutBasket
+        });
+
+    } catch (error) {
+        console.error('Failed to update quantity:', error);
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const removeFromCheckout = async (req, res) => {
+    try {
+        const { productId, userEmail } = req.body;
+
+        // Find the user by email
+        const user = await User.findOne({ email: userEmail });
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Cannot find user by email in the database"
+            });
+        }
+
+        // Remove the item from the checkout basket
+        user.checkoutBasket = user.checkoutBasket.filter(
+            item => item.productId.toString() !== productId
+        );
+
+        // Save the updated user
+        await user.save();
+
+        // Return success message with updated basket
+        res.status(200).json({
+            success: true,
+            message: "Item removed from checkout basket",
+            checkoutBasket: user.checkoutBasket
+        });
+
+    } catch (error) {
+        console.error('Failed to remove item:', error);
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

@@ -89,8 +89,11 @@ const MarketplacePage = () => {
         navigate("/checkout", { state: userData });
     };
 
-    // Cart item count
-    const cartItemCount = userData?.user?.checkoutBasket?.length || 0;
+    // Safely calculate the total quantity of items in the user's checkout basket.
+    // If any item is missing a quantity, treat it as 0. If the basket is undefined, default to 0.
+    const cartItemCount = userData?.user?.checkoutBasket?.reduce((sum, item) => {
+        return sum + (item?.quantity || 0);
+    }, 0) || 0;
 
     // Full-screen loader while backend or token check is in progress
     if (loading) {
