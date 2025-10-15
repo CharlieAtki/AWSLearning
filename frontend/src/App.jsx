@@ -6,12 +6,14 @@ import CheckoutPage from './pages/checkoutPage';
 import BusinessDashboardPage from './pages/businessDashboardPage';
 import BusinessCreationPage from './pages/businessCreationPage';
 import BusinessProductCreation from './components/businessDashboardSubComponents/businessProductCreation';
+import ProductViewPage from './pages/productViewPage';
 
 const App = ( ) => {
 	return (
 		<Router>
 			<Routes>
 				<Route path='/' element={ <MarketplacePage /> } />
+				<Route path='/productView' element={ <ProductViewPage /> } />
 				<Route path='/accountCreation' element={ <AccountCreationForm /> } />
 				<Route path='/accountLogin' element={ <LoginForm /> } />
 				<Route path='checkout' element={ <CheckoutPage /> } />

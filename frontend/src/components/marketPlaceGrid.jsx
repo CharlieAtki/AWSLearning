@@ -1,5 +1,6 @@
 import { useEffect, useState} from "react";
 import makeAuthenticatedRequest from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 const MarketplaceGrid = ({ userData, onCheckoutUpdate }) => {
 
@@ -7,6 +8,8 @@ const MarketplaceGrid = ({ userData, onCheckoutUpdate }) => {
     const [addingToCart, setAddingToCart] = useState(null); // Track which product is being added
     
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Fetch products from backend API
@@ -75,7 +78,15 @@ const MarketplaceGrid = ({ userData, onCheckoutUpdate }) => {
             <div className="w-full max-w-none">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 w-full">
                     {products.map((product, idx) => (
-                        <div key={product._id ?? product.id ?? idx} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col w-full">
+                        <div key={product._id ?? product.id ?? idx} 
+                            className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col w-full"
+                            onClick={() => {navigate('/productView', {
+                                state: {
+                                    product
+                                }
+                            });
+                        }} // Redirecting the user to the product view
+                        >
                             <img src={product.imageUrl} alt={product.productName} className="w-full h-48 object-cover" />
                             <div className="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">

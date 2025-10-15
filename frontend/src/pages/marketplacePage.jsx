@@ -12,6 +12,10 @@ const MarketplacePage = () => {
     const [loading, setLoading] = useState(true);
     const [tokenCheck, setTokenCheck] = useState(Date.now());
 
+    // UseSates for managing the scroll user-feedback
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [scrollVisible, setScrollVisible] = useState(false)
+
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const fetchUserData = async (showLoader = true) => {
@@ -76,6 +80,21 @@ const MarketplacePage = () => {
         return () => clearInterval(interval);
     }, [userData]);
 
+    // Handle scroll progress and button visibility
+    useEffect(() => {
+        const handleScroll = () => {
+            // Calculate scroll progress
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            setScrollProgress(scrolled);
+            setScrollVisible(winScroll > 500);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     // Callback function to refresh user data after checkout update
     const handleCheckoutUpdate = async () => {
         await fetchUserData(false); // false = don't show loading spinner
@@ -111,6 +130,14 @@ const MarketplacePage = () => {
 
     return (
         <div className="flex flex-col min-h-screen">
+            {/* Progress Bar */}
+            <div className="fixed top-0 left-0 w-full h-1 z-50">
+                <div
+                    className="h-full bg-indigo-600 transition-all duration-150 ease-out"
+                    style={{ width: `${scrollProgress}%` }}
+                />
+            </div>
+
             <NavigationBar />
             <MarketplaceGrid 
                 userData={userData} 
