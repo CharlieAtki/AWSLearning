@@ -206,7 +206,7 @@ export const addItemToCheckout = async (req, res) => {
 
         if (existingItemIndex !== -1) {
             // If item exists, increment quantity
-            user.checkoutBasket[existingItemIndex].quantity += 1;
+            user.checkoutBasket[existingItemIndex].quantity += quantity;
         } else {
             // If item doesn't exist, add new item
             user.checkoutBasket.push({ 
