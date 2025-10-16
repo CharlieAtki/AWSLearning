@@ -12,16 +12,15 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
 
     const [quantity, setQuantity] = useState(1);
     const [updatingItem, setUpdatingItem] = useState(null);
-    const [updatingCheckoutValue, setUpdatingCheckoutValue] = useState(null); // Used for spinners
+    const [updatingCheckoutValue, setUpdatingCheckoutValue] = useState(null);
     const [totalCheckoutValue, setTotalCheckoutValue] = useState(null);
-    const [addingToCart, setAddingToCart] = useState(null); // Track which product is being added
+    const [addingToCart, setAddingToCart] = useState(null);
 
 
     if (!product) {
         return <div className="p-6 text-center text-gray-500">No product selected.</div>;
     }
 
-    // Safely deconstruct product details with fallbacks
     const {
         productId,
         productName,
@@ -36,7 +35,6 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
         price: 0
     };
 
-    // Mock data for enhanced product info
     const features = [
         "Premium quality materials",
         "Expertly crafted design",
@@ -44,7 +42,6 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
         "Fast shipping available"
     ];
 
-    // Hardcoded benefits section data
     const benefits = [
         { icon: Truck, title: "Free Delivery", desc: "On orders over £50" },
         { icon: RefreshCw, title: "Easy Returns", desc: "30-day return policy" },
@@ -52,13 +49,12 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
     ];    
 
     const addItemToOrder = async (productId, productName) => {
-        // Check if user is signed in
         if (!userData || !userData.user) {
             alert("Please sign in to add items to your cart");
             return;
         }
 
-        setAddingToCart(productId); // Set loading state for this specific product
+        setAddingToCart(productId);
 
         try {
             const response = await makeAuthenticatedRequest(`${backendUrl}/api/user-auth/addItemToCheckout`,
@@ -77,7 +73,6 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
 
             if (data.success) {
                 console.log("Cart updated with product:", productId);
-                // Trigger parent component to refetch user data
                 if (onCheckoutUpdate) {
                     await onCheckoutUpdate();
                 }
@@ -90,7 +85,7 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
             console.error('Error adding product to cart:', error);
             alert("An error occurred. Please try again.");
         } finally {
-            setAddingToCart(null); // Clear loading state
+            setAddingToCart(null);
         }
     };
 
@@ -118,13 +113,13 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
                 {/* Main Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
 
-                    {/* Image Section */}
-                    <div className="space-y-4">
-                        <div className="relative group">
+                    {/* Image Section - Full Height */}
+                    <div className="flex flex-col">
+                        <div className="relative group flex-1 min-h-[400px] sm:min-h-[600px]">
                             <img
                                 src={imageUrl}
                                 alt={productName}
-                                className="w-full h-[400px] sm:h-[500px] object-cover rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700"
+                                className="w-full h-full object-cover rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700"
                             />
                             <div className="absolute top-4 right-4 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
                                 Premium Quality
@@ -142,6 +137,7 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
                             <p className="text-5xl font-bold text-indigo-600 dark:text-indigo-400">
                                 £{price?.toFixed(2) ?? "N/A"}
                             </p>
+                            {/* Could adjust to give specific promotional pricings */}
                             <span className="text-lg text-gray-500 line-through">£{((price ?? 0) * 1.3).toFixed(2)}</span>
                             <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm font-semibold">
                                 Save 23%
@@ -182,73 +178,32 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
                                 Quantity
                             </label>
                             <div className="flex items-center gap-3">
-                                {/* <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 flex items-center justify-center text-xl font-semibold transition"
-                                >
-                                    -
-                                </button>
-                                <input
-                                    type="number"
-                                    value={quantity}
-                                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                    className="w-20 h-10 text-center border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-semibold"
-                                />
-                                <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 flex items-center justify-center text-xl font-semibold transition"
-                                >
-                                    +
-                                </button> */}
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={() => setQuantity(quantity - 1)}
+                                        disabled={quantity <= 1 || updatingItem === productId}
+                                        className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                    >
+                                        <Minus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                    </button>
 
-                                {/* Quantity Controls */}
-                                    <div className="flex items-center gap-3">
-                                        <button
-                                            onClick={() => setQuantity(quantity - 1)}
-                                            disabled={quantity <= 1 || updatingItem === productId}
-                                            className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                                        >
-                                            <Minus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-                                        </button>
+                                    <span className="text-gray-700 dark:text-gray-200 font-semibold min-w-[2rem] text-center">
+                                        {quantity}
+                                    </span>
 
-                                        <span className="text-gray-700 dark:text-gray-200 font-semibold min-w-[2rem] text-center">
-                                            {quantity}
-                                        </span>
-
-                                        <button
-                                            onClick={() => setQuantity(quantity + 1)}
-                                            disabled={updatingItem === productId}
-                                            className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                                        >
-                                            <Plus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-                                        </button>
-                                    </div>
-                                <span className="ml-4 text-gray-600 dark:text-gray-400">
-                                    Total: <span className="font-bold text-gray-900 dark:text-white">£{((price ?? 0) * quantity).toFixed(2)}</span>
-                                </span>
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        disabled={updatingItem === productId}
+                                        className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                    >
+                                        <Plus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         {/* Call to Action */}
                         <div className="flex gap-4">
-                            {/* <button
-                                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl transition-all transform hover:scale-105 flex items-center justify-center text-lg font-semibold shadow-lg"
-                                onClick={() => {
-                                    alert(`Added ${quantity}x "${productName}" to cart.`);
-                                }}
-                            >
-                                Add to Cart
-                                <ArrowRight className="ml-2 w-5 h-5" />
-                            </button>
-                            <button
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl transition-all transform hover:scale-105 flex items-center justify-center text-lg font-semibold shadow-lg"
-                                onClick={() => {
-                                    alert(`Proceeding to checkout with ${quantity}x "${productName}"`);
-                                }}
-                            >
-                                Buy Now
-                            </button> */}
-
                             <button 
                                 className={`w-full mx-4 py-2 px-4 rounded-md transition text-sm sm:text-base flex items-center justify-center gap-2 ${
                                     userData && userData.user 
@@ -258,7 +213,7 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
                                         : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                 }`}
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Stops the click from propagating to the parent div
+                                    e.stopPropagation();
                                     addItemToOrder(product._id ?? product.id, product.productName)
                                 }}
                                 disabled={!userData || !userData.user || addingToCart === (product._id ?? product.id)}
