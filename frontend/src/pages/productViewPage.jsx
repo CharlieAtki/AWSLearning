@@ -3,16 +3,18 @@ import { useEffect, useState } from "react";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import NavigationBar from "../components/navigationBar";
+import makeAuthenticatedRequest from "../utils/api.js";
 
 const ProductViewPage = () => {
     const navigate = useNavigate();
     const { state } = useLocation();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     // UseSates for managing the scroll user-feedback
     const [scrollProgress, setScrollProgress] = useState(0);
-    const [scrollVisible, setScrollVisible] = useState(false)
-
-    const userData = state?.userData;
+    const [scrollVisible, setScrollVisible] = useState(false);
+    const [userData, setUserData] = useState(state?.userData);
+    const [loading, setLoading] = useState(false);
 
     const fetchUserData = async (showLoader = true) => {
         try {
@@ -102,9 +104,9 @@ const ProductViewPage = () => {
             </div>
             
             <NavigationBar />
-            < ProductView
+            <ProductView
                 userData={userData}
-                onCheckoutUpdate={handleCheckoutUpdate} // Passing the function to refresh user data after checkout update
+                onCheckoutUpdate={handleCheckoutUpdate}
             />
 
             {/* Floating Cart Button with Badge */}
@@ -128,4 +130,4 @@ const ProductViewPage = () => {
     );
 }
 
-export default ProductViewPage
+export default ProductViewPage;
