@@ -233,7 +233,7 @@ const CheckoutOrdersGrid = () => {
                                     </svg>
                                 ) : (
                                     <span className="text-green-600 dark:text-green-400">
-                                        ${totalCheckoutValue?.toFixed(2) ?? "0.00"}
+                                        £{totalCheckoutValue?.toFixed(2) ?? "0.00"}
                                     </span>
                                 )}
                             </div>

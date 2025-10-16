@@ -82,12 +82,24 @@ const MarketplaceGrid = ({ userData, onCheckoutUpdate }) => {
                             className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:transform hover:scale-105 transition-transform duration-300 overflow-hidden flex flex-col w-full"
                             onClick={() => {navigate('/productView', {
                                 state: {
-                                    product
+                                    product,
+                                    userData
                                 }
                             });
                         }} // Redirecting the user to the product view
                         >
-                            <img src={product.imageUrl} alt={product.productName} className="w-full h-48 object-cover" />
+                            <div className="space-y-4">
+                                <div className="relative group">
+                                    <img
+                                        src={product.imageUrl}
+                                        alt={product.productName}
+                                        className="w-full h-48 object-cover rounded-2xl shadow-2xl border-2 border-gray-200 dark:border-gray-700"
+                                    />
+                                    <div className="absolute top-2 right-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg">
+                                        More Info
+                                    </div>
+                                </div>
+                            </div>
                             <div className="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-2">
                                     {product.productName}
@@ -105,7 +117,10 @@ const MarketplaceGrid = ({ userData, onCheckoutUpdate }) => {
                                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                                             : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                     }`}
-                                    onClick={() => addItemToOrder(product._id ?? product.id, product.productName)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Stops the click from propagating to the parent div
+                                        addItemToOrder(product._id ?? product.id, product.productName)
+                                    }}
                                     disabled={!userData || !userData.user || addingToCart === (product._id ?? product.id)}
                                 >
                                     {addingToCart === (product._id ?? product.id) ? (

@@ -1,23 +1,40 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ArrowLeft, ArrowRight, DollarSign, Shield, Truck, RefreshCw, Star, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, DollarSign, Shield, Truck, RefreshCw, Star, Check, Minus, Plus } from "lucide-react";
+import makeAuthenticatedRequest from "../utils/api";
 
-const ProductView = () => {
+const ProductView = ({ userData, onCheckoutUpdate }) => {
     const navigate = useNavigate();
     const { state } = useLocation();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
     const product = state?.product;
+
     const [quantity, setQuantity] = useState(1);
+    const [updatingItem, setUpdatingItem] = useState(null);
+    const [updatingCheckoutValue, setUpdatingCheckoutValue] = useState(null); // Used for spinners
+    const [totalCheckoutValue, setTotalCheckoutValue] = useState(null);
+    const [addingToCart, setAddingToCart] = useState(null); // Track which product is being added
+
 
     if (!product) {
         return <div className="p-6 text-center text-gray-500">No product selected.</div>;
     }
 
+    // Safely deconstruct product details with fallbacks
     const {
+        productId,
         productName,
         description,
         imageUrl,
         price
-    } = product;
+    } = product || {
+        productId: null,
+        productName: "Unknown Product",
+        description: "No description available.",
+        imageUrl: "https://via.placeholder.com/600x400?text=No+Image",
+        price: 0
+    };
 
     // Mock data for enhanced product info
     const features = [
@@ -27,11 +44,55 @@ const ProductView = () => {
         "Fast shipping available"
     ];
 
+    // Hardcoded benefits section data
     const benefits = [
         { icon: Truck, title: "Free Delivery", desc: "On orders over £50" },
         { icon: RefreshCw, title: "Easy Returns", desc: "30-day return policy" },
         { icon: Shield, title: "Secure Payment", desc: "100% secure checkout" }
     ];    
+
+    const addItemToOrder = async (productId, productName) => {
+        // Check if user is signed in
+        if (!userData || !userData.user) {
+            alert("Please sign in to add items to your cart");
+            return;
+        }
+
+        setAddingToCart(productId); // Set loading state for this specific product
+
+        try {
+            const response = await makeAuthenticatedRequest(`${backendUrl}/api/user-auth/addItemToCheckout`,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        productId,
+                        productName,
+                        userEmail: userData.user.email,
+                        quantity
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log("Cart updated with product:", productId);
+                // Trigger parent component to refetch user data
+                if (onCheckoutUpdate) {
+                    await onCheckoutUpdate();
+                }
+            } else {
+                console.error("Failed to add product to cart:", data.message);
+                alert("Failed to add item to cart. Please try again.");
+            }
+
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            alert("An error occurred. Please try again.");
+        } finally {
+            setAddingToCart(null); // Clear loading state
+        }
+    };
 
     return (
         <div className="p-4 sm:p-8 bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 min-h-screen text-gray-900 dark:text-white">
@@ -121,7 +182,7 @@ const ProductView = () => {
                                 Quantity
                             </label>
                             <div className="flex items-center gap-3">
-                                <button
+                                {/* <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                     className="w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 flex items-center justify-center text-xl font-semibold transition"
                                 >
@@ -138,7 +199,30 @@ const ProductView = () => {
                                     className="w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 hover:border-indigo-500 dark:hover:border-indigo-400 flex items-center justify-center text-xl font-semibold transition"
                                 >
                                     +
-                                </button>
+                                </button> */}
+
+                                {/* Quantity Controls */}
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => setQuantity(quantity - 1)}
+                                            disabled={quantity <= 1 || updatingItem === productId}
+                                            className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                        >
+                                            <Minus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                        </button>
+
+                                        <span className="text-gray-700 dark:text-gray-200 font-semibold min-w-[2rem] text-center">
+                                            {quantity}
+                                        </span>
+
+                                        <button
+                                            onClick={() => setQuantity(quantity + 1)}
+                                            disabled={updatingItem === productId}
+                                            className="p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                                        >
+                                            <Plus className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                                        </button>
+                                    </div>
                                 <span className="ml-4 text-gray-600 dark:text-gray-400">
                                     Total: <span className="font-bold text-gray-900 dark:text-white">£{((price ?? 0) * quantity).toFixed(2)}</span>
                                 </span>
@@ -147,7 +231,7 @@ const ProductView = () => {
 
                         {/* Call to Action */}
                         <div className="flex gap-4">
-                            <button
+                            {/* <button
                                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl transition-all transform hover:scale-105 flex items-center justify-center text-lg font-semibold shadow-lg"
                                 onClick={() => {
                                     alert(`Added ${quantity}x "${productName}" to cart.`);
@@ -163,6 +247,35 @@ const ProductView = () => {
                                 }}
                             >
                                 Buy Now
+                            </button> */}
+
+                            <button 
+                                className={`w-full mx-4 py-2 px-4 rounded-md transition text-sm sm:text-base flex items-center justify-center gap-2 ${
+                                    userData && userData.user 
+                                        ? addingToCart === (product._id ?? product.id)
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                }`}
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Stops the click from propagating to the parent div
+                                    addItemToOrder(product._id ?? product.id, product.productName)
+                                }}
+                                disabled={!userData || !userData.user || addingToCart === (product._id ?? product.id)}
+                            >
+                                {addingToCart === (product._id ?? product.id) ? (
+                                    <>
+                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Added!</span>
+                                    </>
+                                ) : userData && userData.user ? (
+                                    'Add to Cart'
+                                ) : (
+                                    'Sign In to Add'
+                                )}
                             </button>
                         </div>
 

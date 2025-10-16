@@ -181,7 +181,7 @@ export const userLogout = async (req, res) => {
 
 export const addItemToCheckout = async (req, res) => {
     try {
-        const { productId, productName, userEmail } = req.body;
+        const { productId, productName, userEmail, quantity } = req.body;
 
         // Find the user by email (fixed query)
         const user = await User.findOne({ email: userEmail });
@@ -212,7 +212,7 @@ export const addItemToCheckout = async (req, res) => {
             user.checkoutBasket.push({ 
                 productId, 
                 productName,
-                quantity: 1 
+                quantity: quantity || 1 // Default to 1 if quantity not provided 
             });
         }
 
