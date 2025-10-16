@@ -74,6 +74,11 @@ const ProductViewPage = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Fetch user data when component mounts or location changes
+    useEffect(() => {
+        fetchUserData();
+    }, [backendUrl, location.pathname]);
+
     // Callback function to refresh user data after checkout update
     const handleCheckoutUpdate = async () => {
         await fetchUserData(false); // false = don't show loading spinner
