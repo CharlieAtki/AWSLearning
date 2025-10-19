@@ -4,16 +4,15 @@ FROM node:${NODE_VERSION}-slim AS base
 WORKDIR /app
 
 # Install dependencies using npm ci for deterministic builds
-COPY --link package.json package.json
-COPY --link package-lock.json package-lock.json
+COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --production
 
-# Copy application source code (excluding .env, .git, lock files, IDE configs)
-COPY --link controller/ controller/
-COPY --link models/ models/
-COPY --link routes/ routes/
-COPY --link server.js server.js
+# Copy application source code (excluding .env, .git, etc. via .dockerignore)
+COPY controller/ ./controller/
+COPY models/ ./models/
+COPY routes/ ./routes/
+COPY server.js ./
 
 # Set environment variables for production
 ENV NODE_ENV=production
@@ -23,8 +22,12 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 USER appuser
 
-# Expose the port (commonly 3000 for Node.js, adjust if needed)
+# Expose the port
 EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
 # Start the application
 CMD ["node", "server.js"]

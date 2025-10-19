@@ -6,16 +6,21 @@ FROM node:${NODE_VERSION}-slim AS builder
 WORKDIR /app
 
 # Install dependencies
-COPY --link package.json package-lock.json ./
+COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \
     npm ci
 
 # Copy source files (excluding .env, .git, IDE, lock files, etc.)
-COPY --link . .
+COPY src/ ./src/
+COPY public/ ./public/
+COPY index.html ./
+COPY vite.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+COPY eslint.config.js ./
 
-# Build the frontend (assumes Vite or similar build tool)
-RUN --mount=type=cache,target=/root/.npm \
-    npm run build
+# Build the frontend (Vite)
+RUN npm run build
 
 # Production stage
 FROM node:${NODE_VERSION}-slim AS final
@@ -24,16 +29,20 @@ WORKDIR /app
 # Create non-root user
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
-# Copy built assets and production dependencies only
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
+# Install a simple HTTP server for serving static files
+RUN npm install -g serve
+
+# Copy built assets from builder
+COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
 
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 USER appuser
 
-EXPOSE 4173  # Default Vite preview port; adjust if your app uses a different port
+EXPOSE 4173
 
-# Start the app (Vite preview by default; change if your app uses a different start command)
-CMD ["npx", "vite", "preview", "--port", "4173", "--host"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:4173', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Serve the static files
+CMD ["serve", "-s", "dist", "-l", "4173"]

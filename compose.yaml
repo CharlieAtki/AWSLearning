@@ -1,52 +1,67 @@
+version: '3.8'
+
 services:
   js-backend:
     build:
       context: ./backend
-      dockerfile: ../backend/Dockerfile
+      dockerfile: Dockerfile
     restart: unless-stopped
     init: true
-    # Expose the port defined in Dockerfile (3000)
     ports:
       - "3000:3000"
-    # Use env_file if .env exists in backend directory
     env_file:
       - ./backend/.env
     networks:
       - appnet
-    # Add depends_on if backend requires external services (none detected)
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   js-frontend:
     build:
       context: ./frontend
-      dockerfile: ../frontend/Dockerfile
+      dockerfile: Dockerfile
     restart: unless-stopped
     init: true
-    # Expose the port defined in Dockerfile (4173)
     ports:
       - "4173:4173"
-    # Use env_file if .env exists in frontend directory
     env_file:
       - ./frontend/.env
     networks:
       - appnet
+    environment:
+      - NODE_ENV=production
+      - VITE_BACKEND_URL=http://js-backend:3000
     depends_on:
-      - js-backend  # Ensure frontend starts after backend
+      js-backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   js-ai-service:
     build:
-      context: ./ai-service
-      dockerfile: ../ai-service/Dockerfile
+      context: ai-mcp-service
+      dockerfile: Dockerfile
     restart: unless-stopped
     init: true
-    # No EXPOSE in Dockerfile, so no ports mapped
-    # Use env_file if .env exists in ai-service directory
-    # env_file: ./ai-service/.env  # Uncomment if .env file exists
     networks:
       - appnet
+    environment:
+      - NODE_ENV=production
+      - BACKEND_URL=http://js-backend:3000
     depends_on:
-      - js-backend  # If AI service needs backend API
+      js-backend:
+        condition: service_healthy
 
 networks:
   appnet:
     driver: bridge
-    # Shared network for inter-service communication
