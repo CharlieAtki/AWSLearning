@@ -8,7 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import businessRoutes from "./routes/businessRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import {authCheck} from "./controller/authCheck.js";
+import agentChatRoutes from "./routes/agentChatRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -90,7 +90,7 @@ app.use('/api/business-unAuth', businessRoutes) // Routes for authenticated user
 
 app.use('/api/order-auth', authenticateToken, orderRoutes) // Routes for authenticated users
 
-app.use('/api/agentChat-auth', authenticateToken, orderRoutes) // Routes for authenticated users
+app.use('/api/agentChat-auth', authenticateToken, agentChatRoutes) // Routes for authenticated users
 
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 

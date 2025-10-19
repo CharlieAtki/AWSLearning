@@ -20,6 +20,10 @@ const NavigationBar = () => {
             name: "Marketplace",
             link: "/"
         },
+        {
+            name: "🤖 Agent",
+            link: "/agent"
+        },
     ];
 
     // Placeholder user profile data

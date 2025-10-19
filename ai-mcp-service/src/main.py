@@ -6,61 +6,66 @@ import os
 mcp = FastMCP("Weather Server")
 
 
+EXPRESS_BASE_URL = os.getenv("EXPRESS_BASE_URL", "http://localhost:3000")
+
 @mcp.tool()
-def get_weather(city: str) -> str:
-    """Fetches the current weather for the specified city."""
+def search_product_by_name(product_name: str):
+    """
+    Searches for a product by name and returns its MongoDB ObjectId and details.
+    Use this to find the product_id before adding to checkout.
+    """
     try:
-        endpoint = "https://wttr.in"
-        response = requests.get(f"{endpoint}/{city}?format=3", timeout=5)
-        return response.text if response.status_code == 200 else "Could not fetch weather"
-    except Exception as e:
-        return f"Error fetching weather: {str(e)}"
+        endpoint = f"{EXPRESS_BASE_URL}/api/product-unAuth/getAllProducts"
+        response = requests.get(endpoint, timeout=5)
 
-
-@mcp.tool()
-def add_numbers(a: int, b: int) -> int:
-    """Adds two numbers together."""
-    return a + b
-
-
-@mcp.tool()
-def get_weather_forecast(city: str) -> str:
-    """Gets a 3-day weather forecast for the specified city."""
-    try:
-        endpoint = "https://wttr.in"
-        response = requests.get(f"{endpoint}/{city}?format=j1", timeout=5)
         if response.status_code == 200:
             data = response.json()
-            current = data.get("current_condition", [{}])[0]
-            forecast = data.get("weather", [])[:3]
+            products = data.get('products', [])
 
-            result = f"Current: {current.get('description', 'N/A')}, Temp: {current.get('temp_C', 'N/A')}°C\n"
-            result += "3-Day Forecast:\n"
-            for day in forecast:
-                date = day.get("date", "")
-                desc = day.get("hourly", [{}])[0].get("condition", {}).get("description", "N/A")
-                avg_temp = day.get("avgtemp_c", "N/A")
-                result += f"  {date}: {desc}, Avg: {avg_temp}°C\n"
-            return result
-        return "Could not fetch forecast"
+            # Search for product by name (case-insensitive)
+            matching = [
+                p for p in products
+                if product_name.lower() in p.get('productName', '').lower()
+            ]
+
+            if matching:
+                product = matching[0]
+                return f"✅ Found: {product.get('productName')} | ID: {product.get('_id')} | Price: £{product.get('price', 'N/A')}"
+            else:
+                return f"❌ Product '{product_name}' not found in catalog"
+        else:
+            return f"❌ Failed to search products (Status: {response.status_code})"
+
     except Exception as e:
-        return f"Error fetching forecast: {str(e)}"
+        return f"⚠️ Error searching products: {str(e)}"
 
-
-EXPRESS_BASE_URL = os.getenv("EXPRESS_BASE_URL", "http://localhost:3000")  # Example backend port
-EXPRESS_ADD_ITEM_ROUTE = f"{EXPRESS_BASE_URL}/api/user-auth/addItemToCheckout"
 
 @mcp.tool()
-def add_item_to_checkout(item_id: str, quantity: int, user_email: str, token: str):
+def add_item_to_checkout(product_id: str, product_name: str, quantity: int, user_email: str, token: str):
     """
-    Adds an item to the user's checkout by calling the Express backend route.
+    Adds an item to the user's checkout basket.
+
+    Args:
+        product_id: The MongoDB ObjectId of the product (must be 24 hex characters)
+        product_name: The name of the product (for reference)
+        quantity: How many items to add (default: 1)
+        user_email: The email of the user making the purchase
+        token: JWT authentication token from the user
+
+    Important: Always search for the product first using search_product_by_name()
+    to get the correct product_id before calling this function.
     """
 
     try:
+        # Validate ObjectId format (should be 24 character hex string)
+        if not isinstance(product_id, str) or len(product_id) != 24:
+            return f"❌ Invalid product ID format. Expected 24-character hex string, got: {product_id}"
+
         payload = {
-            "productId": item_id,  # or a real productId
-            "quantity": quantity,
-            "userEmail": user_email
+            "productId": product_id,  # Must be valid MongoDB ObjectId
+            "productName": product_name,
+            "userEmail": user_email,
+            "quantity": int(quantity)
         }
 
         headers = {
@@ -68,17 +73,18 @@ def add_item_to_checkout(item_id: str, quantity: int, user_email: str, token: st
             "Content-Type": "application/json"
         }
 
-        response = requests.post(EXPRESS_ADD_ITEM_ROUTE, json=payload, headers=headers)
+        endpoint = f"{EXPRESS_BASE_URL}/api/user-auth/addItemToCheckout"
+        response = requests.post(endpoint, json=payload, headers=headers, timeout=10)
 
         if response.status_code == 200:
             data = response.json()
-            return f"✅ {data.get('message', 'Item added successfully!')}"
+            return f"✅ {data.get('message', 'Item added successfully to checkout!')}"
         else:
-            return f"❌ Failed to add item: {response.text}"
+            error_msg = response.json().get('message', response.text)
+            return f"❌ Failed to add item: {error_msg}"
 
     except Exception as e:
-        return f"⚠️ Error calling backend: {str(e)}"
-
+        return f"⚠️ Error adding item to checkout: {str(e)}"
 
 # Run the MCP server with SSE transport
 if __name__ == "__main__":

@@ -182,7 +182,15 @@ export const addItemToCheckout = async (req, res) => {
     try {
         const { productId, productName, userEmail, quantity } = req.body;
 
-        // Find the user by email (fixed query)
+        // Validate that productId is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid product ID format. Expected MongoDB ObjectId, received: ${productId}`
+            });
+        }
+
+        // Find the user by email
         const user = await User.findOne({ email: userEmail });
 
         // Check if user exists in the database
@@ -200,18 +208,18 @@ export const addItemToCheckout = async (req, res) => {
 
         // Check if item already exists in basket
         const existingItemIndex = user.checkoutBasket.findIndex(
-            item => item.productId.toString() === productId
+            item => item.productId.toString() === productId.toString()
         );
 
         if (existingItemIndex !== -1) {
             // If item exists, increment quantity
-            user.checkoutBasket[existingItemIndex].quantity += quantity;
+            user.checkoutBasket[existingItemIndex].quantity += quantity || 1;
         } else {
             // If item doesn't exist, add new item
-            user.checkoutBasket.push({ 
-                productId, 
-                productName,
-                quantity: quantity || 1 // Default to 1 if quantity not provided 
+            user.checkoutBasket.push({
+                productId: new mongoose.Types.ObjectId(productId), // Explicitly convert to ObjectId
+                productName: productName || "Unknown Product",
+                quantity: quantity || 1
             });
         }
 
@@ -229,7 +237,7 @@ export const addItemToCheckout = async (req, res) => {
         console.error('Failed to add item to checkout:', error);
         res.status(400).json({
             success: false,
-            message: error.message
+            message: error.message || "Failed to add item to checkout"
         });
     }
 };

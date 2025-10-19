@@ -7,6 +7,7 @@ import BusinessDashboardPage from './pages/businessDashboardPage';
 import BusinessCreationPage from './pages/businessCreationPage';
 import BusinessProductCreation from './components/businessDashboardSubComponents/businessProductCreation';
 import ProductViewPage from './pages/productViewPage';
+import AgentChatPage from './pages/agentChatPage';
 
 const App = ( ) => {
 	return (
@@ -17,6 +18,7 @@ const App = ( ) => {
 				<Route path='/accountCreation' element={ <AccountCreationForm /> } />
 				<Route path='/accountLogin' element={ <LoginForm /> } />
 				<Route path='checkout' element={ <CheckoutPage /> } />
+				<Route path='/agent' element={ <AgentChatPage /> } />
 
 				{/* ✅ Nested dashboard layout with children */}
 				<Route path='/businessDashboard' element={<BusinessDashboardPage />}>
