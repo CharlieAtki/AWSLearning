@@ -1,5 +1,6 @@
 from fastmcp import FastMCP
 import requests
+import os
 
 # Define the MCP server
 mcp = FastMCP("Weather Server")
@@ -45,10 +46,38 @@ def get_weather_forecast(city: str) -> str:
     except Exception as e:
         return f"Error fetching forecast: {str(e)}"
 
+
+EXPRESS_BASE_URL = os.getenv("EXPRESS_BASE_URL", "http://localhost:3000")  # Example backend port
+EXPRESS_ADD_ITEM_ROUTE = f"{EXPRESS_BASE_URL}/api/user-auth/addItemToCheckout"
+
 @mcp.tool()
-def add_item_to_checkout(item_name: str, quantity: int):
-    """Adds an item to the customer's checkout."""
-    return f"Added {quantity} {item_name} to checkout"
+def add_item_to_checkout(item_id: str, quantity: int, user_email: str, token: str):
+    """
+    Adds an item to the user's checkout by calling the Express backend route.
+    """
+
+    try:
+        payload = {
+            "productId": item_id,  # or a real productId
+            "quantity": quantity,
+            "userEmail": user_email
+        }
+
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(EXPRESS_ADD_ITEM_ROUTE, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            return f"✅ {data.get('message', 'Item added successfully!')}"
+        else:
+            return f"❌ Failed to add item: {response.text}"
+
+    except Exception as e:
+        return f"⚠️ Error calling backend: {str(e)}"
 
 
 # Run the MCP server with SSE transport

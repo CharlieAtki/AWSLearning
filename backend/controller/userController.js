@@ -234,8 +234,6 @@ export const addItemToCheckout = async (req, res) => {
     }
 };
 
-// Add these two new functions to your userController.js
-
 export const updateCheckoutQuantity = async (req, res) => {
     try {
         const { productId, quantity, userEmail } = req.body;

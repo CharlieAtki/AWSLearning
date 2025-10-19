@@ -19,13 +19,13 @@ async def agent_chat(req: Request, data: ChatRequest):
     token = req.headers.get("authorization")
 
     async with MCPServerStreamableHttp(
-        name="Weather Server",
+        name="MCP Server",
         params={"url": "http://localhost:8000/mcp"},
         cache_tools_list=True,
     ) as server:
         agent = Agent(
-            name="Weather Assistant",
-            instructions="You are a helpful assistant that can call backend tools.",
+            name="Customer Assistant",
+            instructions="You are a helpful assistant that can call backend tools to carryout customer requests. For example, using the add_item_to_checkout tool to add an item to the checkout.",
             mcp_servers=[server],
             model_settings=ModelSettings(tool_choice="required"),
         )

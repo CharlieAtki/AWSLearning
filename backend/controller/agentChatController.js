@@ -14,6 +14,7 @@ export const agentChat = async (req, res) => {
             body: JSON.stringify({
                 message,
                 userData: req.user,
+                token,
             }),
         });
 
