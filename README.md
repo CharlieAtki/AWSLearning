@@ -1,55 +1,35 @@
-# AWSLearning
+## Running the Project with Docker
 
-# Authentication Architecture
+This project provides Dockerfiles for each major service (`backend`, `frontend`, and `ai-service`) and a `docker-compose` configuration for streamlined local development and deployment.
 
-## Overview
-This project uses a dual-layer authentication system with both backend middleware and frontend token management for secure and seamless user experience.
+### Requirements
+- Docker and Docker Compose installed
+- Node.js version `22.13.1` is used in all service containers (handled by Dockerfiles)
 
-## Components
+### Environment Variables
+- The backend and frontend services require environment variables defined in their respective `.env` files:
+  - `./backend/.env`
+  - `./frontend/.env`
+- If you need to configure the AI service, create an `.env` file in `./ai-service` and uncomment the `env_file` line in the compose file.
 
-### 🔐 Backend Middleware (`authenticateToken`)
-- **Location**: `server.js` - applied to `/api/user-auth` routes
-- **Purpose**: Server-side protection and validation
-- **Function**: 
-  - Validates JWT tokens on every incoming request
-  - Prevents unauthorized API access
-  - Adds user information to request object (`req.user`)
-- **Security**: Server-side token verification ensures API endpoint protection
+### Build and Run
+1. Ensure your `.env` files are present in `./backend` and `./frontend` (and optionally `./ai-service`).
+2. From the project root, run:
+   ```sh
+   docker compose up --build
+   ```
+   This will build and start all services as defined in the compose file.
 
-### 🔄 Frontend Utility (`makeAuthenticatedRequest`)
-- **Location**: `frontend/src/utils/api.js`
-- **Purpose**: Client-side token management and user experience
-- **Function**:
-  - Automatically handles token refresh when access tokens expire
-  - Retries failed requests with fresh tokens
-  - Handles cleanup and redirects when refresh fails
-- **UX Benefit**: Users stay logged in seamlessly without manual re-authentication
+### Service Ports
+- **Backend**: Exposed on `localhost:3000`
+- **Frontend**: Exposed on `localhost:4173`
+- **AI Service**: No ports exposed by default (internal service)
 
-## Authentication Flow
+### Special Configuration
+- All services run as non-root users for improved security.
+- The frontend uses Vite's preview server by default; if you need to change the port or start command, update the Dockerfile and compose file accordingly.
+- All services are connected via a shared Docker network (`appnet`) for internal communication.
 
-1. **Request Initiation**: Frontend makes API call using `makeAuthenticatedRequest`
-2. **Token Validation**: Backend middleware validates the JWT token
-3. **Token Expiry Handling**: If token expired (401/403), frontend utility:
-   - Uses refresh token to obtain new access token
-   - Retries original request with fresh token
-4. **Success**: Backend validates new token and grants access
-5. **Failure**: If refresh fails, user is redirected to login
-
-## Why Both Are Needed
-
-| Component | Without It | With It |
-|-----------|------------|---------|
-| **Backend Middleware** | API endpoints unprotected | Secure server-side validation |
-| **Frontend Utility** | Users manually re-login on token expiry | Seamless token refresh experience |
-
-## Key Benefits
-
-- ✅ **Security**: Server-side token validation prevents unauthorized access
-- ✅ **User Experience**: Automatic token refresh keeps users logged in
-- ✅ **Efficiency**: Reduces unnecessary login interruptions
-- ✅ **Separation of Concerns**: Backend handles security, frontend handles UX
-
-## Routes Structure
-
-- **Unauthenticated**: `/api/user-unAuth/*` (login, register, refresh)
-- **Authenticated**: `/api/user-auth/*` (protected routes with middleware)
+### Notes
+- If you add or modify environment variables, rebuild the affected service(s) with `docker compose up --build`.
+- The `ai-service` is started without exposed ports; if you need external access, update its Dockerfile and compose file accordingly.

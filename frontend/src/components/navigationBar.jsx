@@ -2,7 +2,6 @@ import {useEffect, useState} from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import makeAuthenticatedRequest from '../utils/api.js';
 import {handleLogout} from "../utils/logout.js";
-import { use } from "react";
 
 const NavigationBar = () => {
     const navigate = useNavigate();
