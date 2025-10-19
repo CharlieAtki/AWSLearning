@@ -1,31 +1,36 @@
 import asyncio
-import os
 from agents import Agent, Runner
-from agents.mcp import MCPServer, MCPServerStdio
+from agents.mcp import MCPServerStreamableHttp
+from agents.model_settings import ModelSettings
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
+async def main():
+    # Connect to your MCP server via MCPServerStreamableHttp
+    async with MCPServerStreamableHttp(
+        name="Weather Server",
+        params={
+            "url": "http://localhost:8000/mcp",
+            # Optional: add headers like authentication tokens
+            # "headers": {"Authorization": "Bearer YOUR_TOKEN"}
+        },
+        cache_tools_list=True,
+    ) as server:
+        # Define your agent with the MCP server
+        agent = Agent(
+            name="Weather Assistant",
+            instructions="You are a helpful assistant. Use the available MCP tools to answer user queries about weather and math operations.",
+            mcp_servers=[server],
+            model_settings=ModelSettings(tool_choice="required"),
+        )
 
-mcp_weather_fetch = MCPServerStdio(
-    params={
-        "command": "uvx",
-        "args": [f"{MCP_SERVER_URL}"]
-    }
-)
+        # Run the agent with a query
+        result = await Runner.run(
+            agent,
+            "What is the weather forcast in London? Also, add 2 + 2. Please tell me what MCP tools are available."
+        )
+        print("\n🤖 Agent Response:\n", result.final_output)
 
-async def handle_request(request):
-    agent = Agent(
-        name="Assistant",
-        instructions="""You are a helpful assistant and would use tools to help the user. Use the mcp_weather_fetch tool to get the weather forecast. Pass the users specified city / location as an argument to the tool.""",
-        mcp_servers=[mcp_weather_fetch],
-    )
-
-    result = await Runner.run(agent, request)
-
-    print(result.final_output)
-
-if __name__ == '__main__':
-    asyncio.run(handle_request("""Please give me the weather forecast for the next 7 days in Leeds."""))
-
+if __name__ == "__main__":
+    asyncio.run(main())
