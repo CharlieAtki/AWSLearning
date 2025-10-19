@@ -1,13 +1,21 @@
-from fastmcp import FastMCP
-from tools.order_tools import add_item_to_order, get_order_status
-from tools.menu_tools import get_menu_items
+from mcp.server.fastmcp import FastMCP
+import requests
 
-app = FastMCP(name="Cafe AI Service")
+# defines the MCP sever
+mcp = FastMCP("Weather Server")
 
-# Register tools
-app.add_tool(add_item_to_order)
-app.add_tool(get_order_status)
-app.add_tool(get_menu_items)
+@mcp.tool()
+def get_weather(city: str) -> str:
+    """Fetches the current weather for the specified city."""
+    endpoint = "https://wttr.in"
+    response = requests.get(f"{endpoint}/{city}")
+    return response.text
 
+@mcp.tool()
+def add_numbers(a: int, b: int) -> int:
+    """Adds two numbers together."""
+    return a + b
+
+# run the custom MCP server
 if __name__ == "__main__":
-    app.run()
+    mcp.run()
