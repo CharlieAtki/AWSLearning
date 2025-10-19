@@ -4,7 +4,6 @@ import User from "../models/User.js";
 import Product from "../models/Product.js";
 import bcrypt from 'bcryptjs';
 
-
 // Number of times the hashing algorithm is applied
 const saltRounds = 10;
 

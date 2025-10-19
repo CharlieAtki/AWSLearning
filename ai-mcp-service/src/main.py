@@ -45,7 +45,10 @@ def get_weather_forecast(city: str) -> str:
     except Exception as e:
         return f"Error fetching forecast: {str(e)}"
 
-
+@mcp.tool()
+def add_item_to_checkout(item_name: str, quantity: int):
+    """Adds an item to the customer's checkout."""
+    return f"Added {quantity} {item_name} to checkout"
 
 
 # Run the MCP server with SSE transport

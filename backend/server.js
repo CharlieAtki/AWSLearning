@@ -90,6 +90,8 @@ app.use('/api/business-unAuth', businessRoutes) // Routes for authenticated user
 
 app.use('/api/order-auth', authenticateToken, orderRoutes) // Routes for authenticated users
 
+app.use('/api/agentChat-auth', authenticateToken, orderRoutes) // Routes for authenticated users
+
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
 // Change to add auth to many of these routes.
