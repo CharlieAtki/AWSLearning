@@ -21,7 +21,7 @@ const NavigationBar = () => {
             link: "/"
         },
         {
-            name: "🤖 Agent",
+            name: "Agent",
             link: "/agent"
         },
     ];

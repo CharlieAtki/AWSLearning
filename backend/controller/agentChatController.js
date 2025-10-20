@@ -1,10 +1,8 @@
 export const agentChat = async (req, res) => {
-    const { message } = req.body;
+    const { message, history } = req.body; // ⬅️ include history from frontend
     const authHeader = req.headers.authorization;
 
-    // Extract token without "Bearer " prefix
-    // Format from frontend: "Bearer eyJhbGc..."
-    // We want: "eyJhbGc..."
+    // Extract token (remove "Bearer ")
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
@@ -21,11 +19,12 @@ export const agentChat = async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": token,  // Send raw token only (no Bearer prefix)
+                'Authorization': token, // Send raw token
             },
             body: JSON.stringify({
                 message,
-                userData: req.user,
+                history,      // ⬅️ forward conversation history
+                userData: req.user, // user info for personalization
             }),
         });
 
@@ -38,7 +37,7 @@ export const agentChat = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Message sent successfully',
-            payload: data
+            payload: data,
         });
 
     } catch (error) {
@@ -46,7 +45,7 @@ export const agentChat = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error while calling agent service',
-            error: error.message
+            error: error.message,
         });
     }
-}
+};

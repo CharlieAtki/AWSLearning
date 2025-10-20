@@ -32,6 +32,7 @@ const AgentChatInterfaceComponent = ({ userData }) => {
             timestamp: new Date(),
         };
 
+        // Update UI immediately
         setMessages((prev) => [...prev, userMessage]);
         setError(null);
         setIsLoading(true);
@@ -39,21 +40,22 @@ const AgentChatInterfaceComponent = ({ userData }) => {
         try {
             const accessToken = localStorage.getItem("accessToken");
 
-            // Direct fetch to Express backend
-            const response = await fetch(
-                `${backendUrl}/api/agentChat-auth/agentChat`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${accessToken}`,
-                    },
-                    body: JSON.stringify({
-                        message: messageText,
-                        userData: userData,
-                    }),
-                }
-            );
+            // Include past messages in request for context
+            const response = await fetch(`${backendUrl}/api/agentChat-auth/agentChat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    message: messageText,
+                    userData,
+                    history: [...messages, userMessage].map((m) => ({
+                        role: m.sender === "user" ? "user" : "assistant",
+                        content: m.text,
+                    })),
+                }),
+            });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
