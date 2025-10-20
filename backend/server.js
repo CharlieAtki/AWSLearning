@@ -34,7 +34,8 @@ app.set('trust proxy', 1);
 
 app.use(cors({
     origin: [
-            'http://localhost:5173', // Local development
+            'http://localhost:5173', // Vite dev server (local)
+            'http://localhost:4173', // Vite preview / static serve (Docker)
             'https://cafe-application-kohl.vercel.app', // production development
     ],
     credentials: true, // Allow cookies to be sent (for refresh token if using cookies)

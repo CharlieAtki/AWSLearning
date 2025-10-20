@@ -5,6 +5,10 @@ ARG NODE_VERSION=22.13.1
 FROM node:${NODE_VERSION}-slim AS builder
 WORKDIR /app
 
+# Backend API URL injected at build time for Vite
+ARG VITE_BACKEND_URL=http://localhost:3000
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
+
 # Install dependencies
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \

@@ -26,6 +26,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_BACKEND_URL: http://localhost:3000
     restart: unless-stopped
     init: true
     ports:
@@ -36,7 +38,6 @@ services:
       - appnet
     environment:
       - NODE_ENV=production
-      - VITE_BACKEND_URL=http://js-backend:3000
     depends_on:
       js-backend:
         condition: service_healthy
@@ -49,16 +50,39 @@ services:
 
   js-ai-service:
     build:
-      context: ai-mcp-service
+      context: ./ai-mcp-service
       dockerfile: Dockerfile
     restart: unless-stopped
     init: true
     networks:
       - appnet
+    env_file:
+      - ./ai-mcp-service/.env
     environment:
-      - NODE_ENV=production
-      - BACKEND_URL=http://js-backend:3000
+      - EXPRESS_BASE_URL=http://js-backend:3000
     depends_on:
+      js-backend:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  ai-agent-service:
+    build:
+      context: ./ai-agent-service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    ports:
+      - "5050:5050"
+    env_file:
+      - ./ai-agent-service/.env
+    environment:
+      - MCP_SERVER_URL=http://js-ai-service:8000/mcp
+    networks:
+      - appnet
+    depends_on:
+      js-ai-service:
+        condition: service_started
       js-backend:
         condition: service_healthy
 
