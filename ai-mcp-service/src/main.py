@@ -19,6 +19,30 @@ def set_token(token: str):
         # Normalize to raw token internally
         _token = _token[7:]
 
+def format_menu(products: list[dict]) -> str:
+    # Group products by category
+    grouped = {}
+    for p in products:
+        category = p.get("category", "Other").capitalize()
+        grouped.setdefault(category, []).append(p)
+
+    # Build structured text
+    response = "Here’s the menu:\n\n"
+    emoji_map = {"Drink": "☕", "Food": "🥐", "Dessert": "🍰", "Other": "🛍️"}
+
+    for category, items in grouped.items():
+        emoji = emoji_map.get(category, "🛍️")
+        response += f"{emoji} {category}\n"
+        for item in items:
+            name = item.get("productName", "Unnamed Product")
+            desc = item.get("description", "")
+            price = item.get("price", 0)
+            response += f"- {name}: {desc} – £{price:.2f}\n"
+        response += "\n"
+
+    response += "Let me know if you’d like to add something to your order or see more details!"
+    return response
+
 # Try to capture session params (including token) when a client connects.
 # Some FastMCP versions expose a connection hook; we defensively support multiple shapes.
 try:
@@ -82,6 +106,25 @@ def search_product_by_name(product_name: str):
     except Exception as e:
         return f"⚠️ Error searching products: {str(e)}"
 
+@mcp.tool()
+def search_all_products():
+    """
+    Searches the mongoDB via the express backend REST API for all products.
+    This tool will provide the agent with a list of all products, allowing them to understand what is available
+    """
+    try:
+        endpoint = f"{EXPRESS_BASE_URL}/api/product-unAuth/getAllProducts"
+        response = requests.get(endpoint, timeout=5)
+
+        if response.status_code == 200:
+            data = response.json()
+            raw_products = data.get('products', [])
+            products = format_menu(raw_products) # Formatting the agent response
+            return f"✅ Found: {products}"
+        else:
+            return f"❌ Failed to search products (Status: {response.status_code})"
+    except Exception as e:
+        return f"⚠️ Error searching products: {str(e)}"
 
 @mcp.tool()
 def add_item_to_checkout(product_id: str, product_name: str, quantity: int, user_email: str):
@@ -138,6 +181,61 @@ def add_item_to_checkout(product_id: str, product_name: str, quantity: int, user
 
     except Exception as e:
         return f"⚠️ Error adding item to checkout: {str(e)}"
+
+
+@mcp.tool()
+def remove_from_checkout(product_id: str, product_name: str, user_email: str):
+    """
+        Removes an item from the user's checkout basket.
+
+        Args:
+            product_id: The MongoDB ObjectId of the product (must be 24 hex characters)
+            product_name: The name of the product (for reference)
+            user_email: The email of the user making the purchase
+
+        Important: Always search for the product first using search_product_by_name()
+        to get the correct product_id before calling this function.
+    """
+
+    try:
+        # Validate ObjectId format (should be 24 character hex string)
+        if not isinstance(product_id, str) or len(product_id) != 24:
+            return f"❌ Invalid product ID format. Expected 24-character hex string, got: {product_id}"
+
+        # Check if token is available
+        if not _token:
+            return "❌ Authentication token not available. Please ensure you're logged in."
+
+        payload = {
+            "productId": product_id,
+            "productName": product_name,
+            "userEmail": user_email,
+        }
+
+        headers = {
+            "Authorization": f"Bearer {_token}",  # Token is raw, so add Bearer prefix
+            "Content-Type": "application/json"
+        }
+
+        endpoint = f"{EXPRESS_BASE_URL}/api/user-auth/removeFromCheckout"
+        response = requests.post(endpoint, json=payload, headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            return f"✅ {data.get('message', 'Item removed successfully from the checkout!')}"
+        else:
+            # try to parse json message if present
+            error_msg = None
+            try:
+                error_msg = response.json().get('message')
+            except Exception:
+                pass
+            if not error_msg:
+                error_msg = response.text
+            return f"❌ Failed to remove item: {error_msg} (Status: {response.status_code})"
+
+    except Exception as e:
+        return f"⚠️ Error removing item from the checkout: {str(e)}"
 
 # Run the MCP server with HTTP transport
 if __name__ == "__main__":
