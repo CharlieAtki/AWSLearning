@@ -1,6 +1,18 @@
 export const agentChat = async (req, res) => {
     const { message } = req.body;
-    const token = req.headers.authorization; // Bearer token
+    const authHeader = req.headers.authorization;
+
+    // Extract token without "Bearer " prefix
+    // Format from frontend: "Bearer eyJhbGc..."
+    // We want: "eyJhbGc..."
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: 'No authentication token provided'
+        });
+    }
 
     const AGENT_SERVER_URL = process.env.AGENT_SERVER_URL;
 
@@ -9,14 +21,17 @@ export const agentChat = async (req, res) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                "Authorization": token,
+                "Authorization": token,  // Send raw token only (no Bearer prefix)
             },
             body: JSON.stringify({
                 message,
                 userData: req.user,
-                token,
             }),
         });
+
+        if (!response.ok) {
+            throw new Error(`Agent service responded with status ${response.status}`);
+        }
 
         const data = await response.json();
 
@@ -27,10 +42,11 @@ export const agentChat = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error calling agent service:', error);
         res.status(500).json({
             success: false,
-            message: 'Server error while fetching products'
+            message: 'Server error while calling agent service',
+            error: error.message
         });
     }
 }
