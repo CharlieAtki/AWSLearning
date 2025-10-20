@@ -58,16 +58,18 @@ const AgentChatPage = () => {
 
     if (!userData || !userData.user) {
         return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-800">
+            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-700">
                 <p className="text-gray-700 dark:text-gray-200 text-lg">Please sign in to chat with the agent.</p>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800">
+        <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900">
             <NavigationBar />
-            <AgentChatInterfaceComponent userData={userData.user} />
+            <div className="p-6">
+                <AgentChatInterfaceComponent userData={userData.user} />
+            </div>
         </div>
     );
 };

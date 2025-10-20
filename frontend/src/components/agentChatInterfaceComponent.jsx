@@ -97,7 +97,7 @@ const AgentChatInterfaceComponent = ({ userData }) => {
     };
 
     return (
-        <div className="flex-1 flex flex-col w-full max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="flex-1 flex flex-col w-full max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-900 dark:to-blue-950 p-4 sm:p-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
