@@ -2,7 +2,7 @@ export const agentChat = async (req, res) => {
     const { message } = req.body;
     const token = req.headers.authorization; // Bearer token
 
-    const AGENT_SERVER_URL = import.meta.env.AGENT_SERVER_URL;
+    const AGENT_SERVER_URL = process.env.AGENT_SERVER_URL;
 
     try {
         const response = await fetch(`${AGENT_SERVER_URL}/api/agent`, {
