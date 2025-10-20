@@ -142,4 +142,5 @@ def add_item_to_checkout(product_id: str, product_name: str, quantity: int, user
 # Run the MCP server with HTTP transport
 if __name__ == "__main__":
     # The server will be available at http://localhost:8000/mcp by default for HTTP transport
-    mcp.run(transport="http", host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    mcp.run(transport="http", host="0.0.0.0", port=port)

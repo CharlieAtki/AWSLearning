@@ -4,9 +4,6 @@ from agents import Agent, Runner
 from agents.mcp import MCPServerStreamableHttp
 from agents.model_settings import ModelSettings
 import os
-import dotenv
-
-load_dotenv = dotenv.load_dotenv()
 
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
 
