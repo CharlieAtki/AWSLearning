@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from agents import Agent, Runner
 from agents.mcp import MCPServerStreamableHttp
 from agents.model_settings import ModelSettings
+import os
+
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/mcp")
 
 app = FastAPI()
 
@@ -30,7 +33,7 @@ async def agent_chat(req: Request, data: ChatRequest):
     async with MCPServerStreamableHttp(
             name="MCP Server",
             params={
-                "url": "http://localhost:8000/mcp",
+                "url": MCP_SERVER_URL,
                 "token": token,  # Pass token to MCP params
             },
             cache_tools_list=True,
