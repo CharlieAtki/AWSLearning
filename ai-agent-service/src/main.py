@@ -10,7 +10,6 @@ MCP_SERVER_URL = os.getenv("MCP_SERVER_URL")
 
 app = FastAPI()
 
-
 class ChatMessage(BaseModel):
     role: str   # "user" or "assistant"
     content: str
@@ -20,12 +19,9 @@ class ChatRequest(BaseModel):
     userData: Optional[dict] = None
     history: Optional[List[ChatMessage]] = []  # 🧠 past messages for context
 
-
-
 @app.get("/")
 async def root():
     return {"message": "AI Agent Service is running"}
-
 
 @app.post("/api/agent")
 async def agent_chat(req: Request, data: ChatRequest):
@@ -41,7 +37,7 @@ async def agent_chat(req: Request, data: ChatRequest):
         name="MCP Server",
         params={
             "url": MCP_SERVER_URL,
-            "token": token,  # Pass token to MCP params
+            "token": token,
         },
         cache_tools_list=True,
     ) as server:
@@ -64,8 +60,8 @@ async def agent_chat(req: Request, data: ChatRequest):
         conversation_context = ""
         if getattr(data, "history", None):
             for msg in data.history:
-                role = msg.get("role", "user")
-                content = msg.get("content", "")
+                role = getattr(msg, "role", "user")
+                content = getattr(msg, "content", "")
                 conversation_context += f"\n{role.title()}: {content}"
         else:
             conversation_context = f"\nUser: {data.message}"
