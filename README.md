@@ -31,22 +31,22 @@ This full-stack application enables businesses to list their products while prov
 The application follows a microservices architecture with four main components:
 
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│                 │     │                  │     │                 │
-│    Frontend     │───▶│     Backend       │───▶│    MongoDB      │
-│   (React/Vite)  │     │   (Express.js)   │     │    Database     │
-│                 │     │                  │     │    (Atlas)      │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
-         │                       │
-         │                       │
-         ▼                       ▼
-┌─────────────────┐     ┌──────────────────┐
-│                 │     │                  │
-│  AI Agent       │───▶│   MCP Server      │
-│  Service        │     │   (FastMCP)      │
-│  (FastAPI)      │     │                  │
-│                 │     │                  │
-└─────────────────┘     └──────────────────┘
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│              │     │              │     │              │     │              │     │              │
+│  Frontend    ├───▶│   Backend    ├────▶│   AI Agent   ├────▶│  MCP Server ├────▶│   MongoDB    │
+│ (React/Vite) │     │ (Express.js) │     │  (FastAPI)   │     │  (FastMCP)   │     │   (Atlas)    │
+│              │     │              │     │              │     │              │     │              │
+└──────────────┘     └──────┬───────┘     └──────────────┘     └──────────────┘     └──────────────┘
+                            │
+                            ▼
+                     ┌──────────────┐
+                     │              │
+                     │  MongoDB     │
+                     │   (Atlas)    │
+                     │              │
+                     └──────────────┘
+
+
 ```
 
 ### Services
