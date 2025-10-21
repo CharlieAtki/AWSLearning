@@ -25,7 +25,6 @@ This full-stack application enables businesses to list their products while prov
   - Product names and descriptions
   - Pricing and categories
   - Image uploads (via Cloudinary)
-- **👥 Role-Based Access**: Owner and employee roles for team management
 
 ## 🏗️ Architecture
 
@@ -366,5 +365,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 For support, please open an issue in the repository or contact the development team.
 
 ---
-
-Built with ❤️ using modern web technologies
