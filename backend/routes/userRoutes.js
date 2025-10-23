@@ -1,5 +1,5 @@
 import express from "express";
-import {addItemToCheckout, fetchCurrentUserInformation, userLogout, updateCheckoutQuantity, removeFromCheckout, calculateTotalCheckoutValue } from "../controller/userController.js";
+import {addItemToCheckout, fetchCurrentUserInformation, userLogout, updateCheckoutQuantity, removeFromCheckout, calculateTotalCheckoutValue, fetchCurrentUserCheckout } from "../controller/userController.js";
 
 const router = express.Router();
 
@@ -17,5 +17,8 @@ router.post('/removeFromCheckout', removeFromCheckout)
 
 // Calculates the total cost of the user checkout basket
 router.post('/calculateTotalCheckoutValue', calculateTotalCheckoutValue)
+
+// Fetches the current user's checkout basket
+router.get('/fetchCurrentUserCheckout', fetchCurrentUserCheckout);
 
 export default router;

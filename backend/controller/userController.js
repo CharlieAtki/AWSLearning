@@ -384,3 +384,32 @@ export const calculateTotalCheckoutValue = async (req, res) => {
     }
 };
 
+export const fetchCurrentUserCheckout = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        // Checking the user exists
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        // Return the user's checkout basket
+        res.status(200).json({
+            success: true,
+            checkoutBasket: user.checkoutBasket
+        });
+
+    } catch (error) {
+        console.error("Failed to fetch user checkout:", error);
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+};

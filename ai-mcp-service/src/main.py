@@ -237,6 +237,47 @@ def remove_from_checkout(product_id: str, product_name: str, user_email: str):
     except Exception as e:
         return f"⚠️ Error removing item from the checkout: {str(e)}"
 
+@mcp.tool()
+def fetch_user_checkout(user_email: str):
+    """
+    Fetches the current user's checkout basket.
+    """
+
+    try: 
+        # Check if token is available
+        if not _token:
+            return "❌ Authentication token not available. Please ensure you're logged in."
+
+        payload = {
+            "userEmail": user_email,
+        }
+
+        headers = {
+            "Authorization": f"Bearer {_token}",  # Token is raw, so add Bearer prefix
+            "Content-Type": "application/json"
+        }
+
+        endpoint = f"{EXPRESS_BASE_URL}/api/user-auth/fetchCurrentUserCheckout"
+        response = requests.get(endpoint, json=payload, headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            data = response.json()
+            return f"✅ {data.get('message', 'Checkout basket fetched successfully!')}"
+        else:
+            # try to parse json message if present
+            error_msg = None
+            try:
+                error_msg = response.json().get('message')
+            except Exception:
+                pass
+            if not error_msg:
+                error_msg = response.text
+            return f"❌ Failed to fetch checkout basket: {error_msg} (Status: {response.status_code})"
+
+    except Exception as e:
+        return f"⚠️ Error fetching checkout basket: {str(e)}"
+
+
 # Run the MCP server with HTTP transport
 if __name__ == "__main__":
     # The server will be available at http://localhost:8000/mcp by default for HTTP transport
