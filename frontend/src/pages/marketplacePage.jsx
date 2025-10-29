@@ -12,6 +12,14 @@ const MarketplacePage = () => {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [tokenCheck, setTokenCheck] = useState(Date.now());
+    const [filters, setFilters] = useState({
+        search: "",
+        minPrice: "",
+        maxPrice: "",
+        category: "",
+        business: "",
+        sort: "relevance"
+    });
 
     // UseSates for managing the scroll user-feedback
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -141,11 +149,15 @@ const MarketplacePage = () => {
 
             <NavigationBar />
 
-            <MarketplaceFilter />
+            <MarketplaceFilter 
+                filters={filters}
+                onChange={setFilters}
+            />
 
             <MarketplaceGrid 
                 userData={userData} 
                 onCheckoutUpdate={handleCheckoutUpdate}
+                filters={filters}
             />
 
             {/* Floating Cart Button with Badge */}
