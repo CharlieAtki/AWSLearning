@@ -4,6 +4,7 @@ import { ShoppingCart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import makeAuthenticatedRequest from "../utils/api.js";
+import MarketplaceFilter from "../components/marketplaceFilter.jsx";
 
 const MarketplacePage = () => {
     const navigate = useNavigate();
@@ -139,6 +140,9 @@ const MarketplacePage = () => {
             </div>
 
             <NavigationBar />
+
+            <MarketplaceFilter />
+
             <MarketplaceGrid 
                 userData={userData} 
                 onCheckoutUpdate={handleCheckoutUpdate}
