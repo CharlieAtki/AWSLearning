@@ -262,7 +262,7 @@ def fetch_user_checkout(user_email: str):
 
         if response.status_code == 200:
             data = response.json()
-            return f"✅ {data.get('message', 'Checkout basket fetched successfully!')}"
+            return f"✅ {data.get('checkout', [])}"
         else:
             # try to parse json message if present
             error_msg = None
