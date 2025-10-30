@@ -11,6 +11,8 @@ const AccountCreationForm = () => {
     
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+    const navigate = useNavigate();
+
     const emailValidityCheck = (email) => email.includes("@"); // Checking to see whether there is an @ character
 
     const handleSubmit = async () => {
@@ -59,7 +61,8 @@ const AccountCreationForm = () => {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                window.location.href = "/marketplace"; // Redirect to marketplace page
+                navigate('/marketplace'); // Redirect to marketplace page
+                
             } else { // Identifying the cause of the Error
                 if (data.field === "email") {
                     setEmailInputError(true);
@@ -76,8 +79,6 @@ const AccountCreationForm = () => {
         const { name, value } = event.target;
         setInput((prev) => ({ ...prev, [name]: value }));
     };
-
-    const navigate = useNavigate();
 
     const goBack = () => {
         navigate(-1);

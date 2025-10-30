@@ -28,7 +28,7 @@ const App = ( ) => {
 				</Route>
 
 				<Route path='/businessCreation' element={ <BusinessCreationPage /> } />
-
+				
 				<Route path='/' element={ <LandingPage /> } />
 			</Routes>
 		</Router>

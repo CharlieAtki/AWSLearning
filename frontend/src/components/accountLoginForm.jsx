@@ -11,6 +11,8 @@ const LoginForm = () => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+    const navigate = useNavigate();
+
     const emailValidityCheck = (email) => email.includes("@");
 
     const handleSubmit = async () => {
@@ -58,7 +60,8 @@ const LoginForm = () => {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                window.location.href = "/marketplace";
+                navigate('/marketplace'); // Navigate to marketplace on successful login
+
             } else {
                 if (data.field === "email") {
                     setEmailInputError(true);
@@ -75,8 +78,6 @@ const LoginForm = () => {
         const { name, value } = event.target;
         setInput((prev) => ({ ...prev, [name]: value }));
     };
-
-    const navigate = useNavigate();
 
     const goBack = () => {
         navigate(-1);
