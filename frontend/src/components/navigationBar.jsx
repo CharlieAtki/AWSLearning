@@ -18,7 +18,7 @@ const NavigationBar = () => {
     const navbarElements = [
         {
             name: "Marketplace",
-            link: "/"
+            link: "/marketplace"
         },
         {
             name: "Agent",
