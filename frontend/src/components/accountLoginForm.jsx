@@ -58,7 +58,7 @@ const LoginForm = () => {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                window.location.href = "/";
+                window.location.href = "/marketplace";
             } else {
                 if (data.field === "email") {
                     setEmailInputError(true);

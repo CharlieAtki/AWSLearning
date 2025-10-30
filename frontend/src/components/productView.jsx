@@ -96,7 +96,7 @@ const ProductView = ({ userData, onCheckoutUpdate }) => {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-8">
                     <button
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/marketplace")}
                         className="flex items-center text-sm sm:text-base text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
                     >
                         <ArrowLeft className="mr-2 w-5 h-5" />

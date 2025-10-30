@@ -59,7 +59,7 @@ const AccountCreationForm = () => {
                 localStorage.setItem('refreshToken', data.refreshToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
 
-                window.location.href = "/";
+                window.location.href = "/marketplace"; // Redirect to marketplace page
             } else { // Identifying the cause of the Error
                 if (data.field === "email") {
                     setEmailInputError(true);

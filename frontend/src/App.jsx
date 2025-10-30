@@ -8,12 +8,13 @@ import BusinessCreationPage from './pages/businessCreationPage';
 import BusinessProductCreation from './components/businessDashboardSubComponents/businessProductCreation';
 import ProductViewPage from './pages/productViewPage';
 import AgentChatPage from './pages/agentChatPage';
+import LandingPage from './pages/landingPage';
 
 const App = ( ) => {
 	return (
 		<Router>
 			<Routes>
-				<Route path='/' element={ <MarketplacePage /> } />
+				<Route path='/marketplace' element={ <MarketplacePage /> } />
 				<Route path='/productView' element={ <ProductViewPage /> } />
 				<Route path='/accountCreation' element={ <AccountCreationForm /> } />
 				<Route path='/accountLogin' element={ <LoginForm /> } />
@@ -27,6 +28,8 @@ const App = ( ) => {
 				</Route>
 
 				<Route path='/businessCreation' element={ <BusinessCreationPage /> } />
+
+				<Route path='/' element={ <LandingPage /> } />
 			</Routes>
 		</Router>
  	)
