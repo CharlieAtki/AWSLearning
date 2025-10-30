@@ -117,7 +117,7 @@ const NavigationBar = () => {
             <div className="py-2 px-2 sm:px-4 lg:px-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-center h-16">
                     {/* Logo/Brand */}
-                    <div className="flex-shrink-0">
+                    <div onClick={() => {navigate('/')}} className="flex-shrink-0">
                         <h1 className="text-xl sm:text-2xl font-bold">
                             Cafe App
                         </h1>
