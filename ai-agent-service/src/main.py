@@ -55,8 +55,9 @@ async def agent_chat(req: Request, data: ChatRequest):
             "1. search_product_by_name — Search for a specific product using its name. Use this to find a product before performing actions on it.\n"
             "2. search_all_products — Retrieve all available products in the café’s menu. Use this to display the full product list or when the user asks to browse.\n"
             "3. add_item_to_checkout — Add a selected product to the user’s checkout. Ensure the product is correctly identified before adding.\n"
-            "4. remove_from_checkout — Remove a specific product from the checkout, based on the user’s request.\n\n"
-        
+            "4. fetch_user_checkout — Retrieve the current contents of the user’s checkout basket. Use this to show what’s already in the basket.\n"
+            "5. remove_from_checkout — Remove a specific product from the checkout, based on the user’s request.\n\n"
+
             "⚙️ Authentication & Security:\n"
             "Before calling any protected backend tool (i.e., any tool that modifies or retrieves user-specific data), "
             "you must first call the MCP tool `set_auth_token` using the session token provided below. "
