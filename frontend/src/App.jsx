@@ -9,6 +9,7 @@ import BusinessProductCreation from './components/businessDashboardSubComponents
 import ProductViewPage from './pages/productViewPage';
 import AgentChatPage from './pages/agentChatPage';
 import LandingPage from './pages/landingPage';
+import BusinessAnalyticsGrid from './components/businessDashboardSubComponents/businessAnalyticsGrid';
 
 const App = ( ) => {
 	return (
@@ -24,11 +25,12 @@ const App = ( ) => {
 				{/* ✅ Nested dashboard layout with children */}
 				<Route path='/businessDashboard' element={<BusinessDashboardPage />}>
 					<Route path='createProduct' element={<BusinessProductCreation />} />
+					<Route path='analytics' element={<BusinessAnalyticsGrid />} />
 					{/* Add more nested routes here */}
 				</Route>
 
 				<Route path='/businessCreation' element={ <BusinessCreationPage /> } />
-				
+
 				<Route path='/' element={ <LandingPage /> } />
 			</Routes>
 		</Router>
